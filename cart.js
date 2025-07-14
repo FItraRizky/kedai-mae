@@ -114,6 +114,158 @@ class Cart {
     }
 }
 
+// Utility: Format price as IDR
+function formatPrice(price) {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+}
+
+// Utility: Trap focus inside a modal
+function trapFocus(modal) {
+    const focusable = modal.querySelectorAll('button, [href], input, textarea, [tabindex]:not([tabindex="-1"])');
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    function handleTab(e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }
+    modal.addEventListener('keydown', handleTab);
+    return () => modal.removeEventListener('keydown', handleTab);
+}
+
+function createOrderOverlay({ itemName, itemPrice, itemPriceText, itemImage }) {
+    const overlay = document.createElement('div');
+    overlay.className = 'order-overlay active';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.innerHTML = `
+        <div class="order-form" tabindex="-1">
+            <span class="close-order" aria-label="Tutup">&times;</span>
+            <h2>Detail Pesanan</h2>
+            <div class="order-product-info">
+                <img id="order-product-img" src="${itemImage}" alt="${itemName}">
+                <h3 id="order-product-name">${itemName}</h3>
+                <p id="order-product-price">${itemPriceText}</p>
+            </div>
+            <div class="form-group">
+                <label for="order-quantity">Jumlah:</label>
+                <input type="number" id="order-quantity" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label for="order-notes">Catatan (opsional):</label>
+                <textarea id="order-notes" rows="3" placeholder="Contoh: tidak pedas, tanpa es, dll."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="order-name">Nama Anda:</label>
+                <input type="text" id="order-name" placeholder="Masukkan nama Anda" autocomplete="name">
+            </div>
+            <div class="order-summary">
+                <p>Total: <span id="order-total-display">${itemPriceText}</span></p>
+            </div>
+            <div class="order-footer">
+                <button class="btn btn-cancel" type="button">Batal</button>
+                <button class="btn btn-confirm" type="button">Konfirmasi Pesanan</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+    const orderForm = overlay.querySelector('.order-form');
+    orderForm.focus();
+    overlay.querySelector('#order-name').focus();
+    return overlay;
+}
+
+function closeOrderOverlay(overlay, restoreFocusTo) {
+    if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+        document.body.style.overflow = 'auto';
+        if (restoreFocusTo) restoreFocusTo.focus();
+    }
+}
+
+function handleOrderButtonClick(e) {
+    e.preventDefault();
+    if (this.classList.contains('add-to-cart')) return;
+
+    const menuItem = this.closest('.menu-item');
+    const itemName = menuItem.querySelector('h3').textContent;
+    const itemPriceText = menuItem.querySelector('.price').textContent;
+    const itemPrice = parseInt(itemPriceText.replace(/\D/g, ''));
+    const itemImage = menuItem.querySelector('.item-img img').src;
+
+    const overlay = createOrderOverlay({ itemName, itemPrice, itemPriceText, itemImage });
+    const orderQuantityInput = overlay.querySelector('#order-quantity');
+    const orderTotalDisplay = overlay.querySelector('#order-total-display');
+    const closeBtn = overlay.querySelector('.close-order');
+    const cancelBtn = overlay.querySelector('.btn-cancel');
+    const confirmBtn = overlay.querySelector('.btn-confirm');
+    const nameInput = overlay.querySelector('#order-name');
+    const notesInput = overlay.querySelector('#order-notes');
+    let removeTrap = trapFocus(overlay);
+
+    // Update total on quantity change
+    orderQuantityInput.addEventListener('input', () => {
+        const quantity = parseInt(orderQuantityInput.value) || 1;
+        orderTotalDisplay.textContent = formatPrice(itemPrice * quantity);
+    });
+
+    // Close overlay handler
+    const closeHandler = () => {
+        closeOrderOverlay(overlay, this);
+        removeTrap();
+    };
+
+    closeBtn.addEventListener('click', closeHandler);
+    cancelBtn.addEventListener('click', closeHandler);
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeHandler();
+    });
+
+    // Close on Escape key
+    overlay.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeHandler();
+    });
+
+    // Confirm order
+    confirmBtn.addEventListener('click', () => {
+        const name = nameInput.value.trim();
+        const quantity = orderQuantityInput.value;
+        const notes = notesInput.value.trim();
+
+        if (!name) {
+            alert('Silakan masukkan nama Anda');
+            nameInput.focus();
+            return;
+        }
+        if (!quantity || quantity < 1) {
+            alert('Jumlah pesanan tidak valid');
+            orderQuantityInput.focus();
+            return;
+        }
+
+        const message = `Halo, saya ingin memesan:\nProduk: ${itemName}\nJumlah: ${quantity}\nTotal: ${orderTotalDisplay.textContent}\nNama: ${name}\nCatatan: ${notes || '-'}\n\nTerima kasih!`;
+        const encodedMessage = encodeURIComponent(message);
+        const phone = '6287878177527';
+        window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+        closeHandler();
+    });
+}
+
+// Attach event listeners (use event delegation if menu items are dynamic)
+document.querySelectorAll('.menu-item .btn').forEach(button => {
+    button.addEventListener('click', handleOrderButtonClick);
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const cart = new Cart();
 
