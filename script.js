@@ -24,72 +24,93 @@ document.addEventListener('DOMContentLoaded', function() {
         lastScroll = currentScroll;
     });
 
-    // Enhanced Mobile Menu with staggered animation
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-    const navItems = document.querySelectorAll('.nav-links li');
+    
+    // Hamburger Menu Functionality
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+const navItems = document.querySelectorAll('.nav-links li');
 
-    hamburger.addEventListener('click', function() {
+hamburger.addEventListener('click', function() {
+    // Toggle class active
     this.classList.toggle('active');
-    // Add this line to toggle 'is-active' class as well.
-    // This is crucial if your CSS uses 'is-active' to transform the hamburger icon into an 'X'.
-    this.classList.toggle('is-active');
     navLinks.classList.toggle('active');
     
-    // Animate hamburger to X
-    if (this.classList.contains('active')) {
-        navLinks.style.right = '0';
-        navItems.forEach((item, index) => {
+    // Toggle body overflow
+    document.body.style.overflow = this.classList.contains('active') ? 'hidden' : 'auto';
+    
+    // Animate nav items
+    navItems.forEach((item, index) => {
+        if (this.classList.contains('active')) {
             item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s`;
             item.style.opacity = '1';
             item.style.transform = 'translateX(0)';
-        });
-    } else {
-        navLinks.style.right = '-100%';
-        navItems.forEach((item, index) => {
+        } else {
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(20px)';
+        }
+    });
+});
+
+// Close menu when clicking a link
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+            e.preventDefault();
+            const target = link.getAttribute('href');
+            
+            // Animate out
+            navItems.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+            });
+            
+            // Close menu after animation
+            setTimeout(() => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                
+                // Navigate to target
+                if (target.startsWith('#')) {
+                    const targetElement = document.querySelector(target);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                } else {
+                    window.location.href = target;
+                }
+            }, 300);
+        }
+    });
+});
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+    if (!hamburger.contains(event.target) && !navLinks.contains(event.target) && navLinks.classList.contains('active')) {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        
+        navItems.forEach(item => {
             item.style.opacity = '0';
             item.style.transform = 'translateX(20px)';
         });
     }
 });
+  
 
-    // Close mobile menu when clicking a link with smooth transition
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
-                const target = link.getAttribute('href');
-                
-                // Animate menu closing first
-                navItems.forEach(item => {
-                    item.style.opacity = '0';
-                    item.style.transform = 'translateX(20px)';
-                });
-                
-                setTimeout(() => {
-                    navLinks.classList.remove('active');
-                    hamburger.classList.remove('active');
-                    hamburger.classList.remove('is-active'); // Ensure 'is-active' is also removed when a link is clicked
-                    
-                    // Then scroll to target
-                    if (target.startsWith('#')) {
-                        const targetElement = document.querySelector(target);
-                        if (targetElement) {
-                            window.scrollTo({
-                                top: targetElement.offsetTop - 80,
-                                behavior: 'smooth'
-                            });
-                        }
-                    }
-                }, 300);
-            }
-        });
-    });
-
-    // Enhanced Smooth Scrolling with offset
+    // Enhanced Smooth Scrolling with offset (untuk tautan di luar menu hamburger)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
-            if (this.getAttribute('href') === '#') return;
+            // Hindari konflik dengan penanganan tautan di menu hamburger jika sudah ditangani di sana
+            if (window.innerWidth <= 768 && this.closest('.nav-links')) {
+                return; // Biarkan event listener di atas yang menanganinya
+            }
+            
+            if (this.getAttribute('href') === '#') return; // Jangan gulir jika href hanya '#'
             
             e.preventDefault();
             const targetId = this.getAttribute('href');
@@ -108,22 +129,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    
-
     // Menu Tab System with fade transition
     const tabBtns = document.querySelectorAll('.tab-btn');
     const menuCategories = document.querySelectorAll('.menu-category');
     
+    // Set active category on load
+    if (tabBtns.length > 0 && menuCategories.length > 0) {
+        tabBtns[0].classList.add('active');
+        menuCategories[0].classList.add('active');
+        menuCategories[0].style.opacity = '1';
+        menuCategories[0].style.transform = 'translateY(0)';
+    }
+
     tabBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             // Remove active class from all buttons and categories
             tabBtns.forEach(btn => btn.classList.remove('active'));
             menuCategories.forEach(category => {
+                // Dimulai dengan transisi keluar
                 category.style.opacity = '0';
                 category.style.transform = 'translateY(10px)';
                 setTimeout(() => {
                     category.classList.remove('active');
-                }, 300);
+                }, 300); // Sesuai dengan durasi transisi
             });
             
             // Add active class to clicked button
@@ -135,11 +163,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             setTimeout(() => {
                 activeCategory.classList.add('active');
+                // Beri sedikit jeda untuk memastikan kelas 'active' sudah diterapkan sebelum memulai fade-in
                 setTimeout(() => {
                     activeCategory.style.opacity = '1';
                     activeCategory.style.transform = 'translateY(0)';
                 }, 10);
-            }, 300);
+            }, 300); // Sesuaikan dengan durasi transisi keluar sebelumnya
         });
     });
 
@@ -147,8 +176,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const animateOnScroll = function() {
         const elements = document.querySelectorAll('.menu-item, .info-item, .about-img, .about-text');
         elements.forEach(element => {
+            // Hanya animasi jika elemen belum terlihat atau dianimasikan
+            if (element.style.opacity === '1') return;
+
             const elementPosition = element.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
+            const screenPosition = window.innerHeight / 1.3; // Muncul ketika 1/3 layar dari bawah
 
             if (elementPosition < screenPosition) {
                 element.style.opacity = '1';
@@ -166,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.addEventListener('scroll', animateOnScroll);
-    animateOnScroll(); // Run once on page load
+    animateOnScroll(); // Run once on page load to animate elements already in view
 
     // Enhanced Dark Mode Functionality
     const themeToggle = document.getElementById('theme-toggle');
@@ -253,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             document.body.appendChild(orderOverlay);
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when order overlay is open
 
             const orderQuantityInput = orderOverlay.querySelector('#order-quantity');
             const orderTotalDisplay = orderOverlay.querySelector('#order-total-display');
@@ -276,12 +308,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Close order overlay
             orderOverlay.querySelector('.close-order').addEventListener('click', () => {
                 document.body.removeChild(orderOverlay);
-                document.body.style.overflow = 'auto';
+                document.body.style.overflow = 'auto'; // Mengizinkan scrolling kembali
             });
             
             orderOverlay.querySelector('.btn-cancel').addEventListener('click', () => {
                 document.body.removeChild(orderOverlay);
-                document.body.style.overflow = 'auto';
+                document.body.style.overflow = 'auto'; // Mengizinkan scrolling kembali
             });
             
             // Confirm order
@@ -305,14 +337,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const encodedMessage = encodeURIComponent(message);
                 window.open(`${waLink}&text=${encodedMessage}`, '_blank');
                 document.body.removeChild(orderOverlay);
-                document.body.style.overflow = 'auto';
+                document.body.style.overflow = 'auto'; // Mengizinkan scrolling kembali
             });
             
-            // Close when clicking outside
+            // Close when clicking outside order overlay
             orderOverlay.addEventListener('click', (e) => {
                 if (e.target === orderOverlay) {
                     document.body.removeChild(orderOverlay);
-                    document.body.style.overflow = 'auto';
+                    document.body.style.overflow = 'auto'; // Mengizinkan scrolling kembali
                 }
             });
         });

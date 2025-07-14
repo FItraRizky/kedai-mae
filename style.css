@@ -431,6 +431,7 @@ input:checked + .slider:before {
     display: none;
     cursor: pointer;
     z-index: 1001;
+    transition: all 0.3s ease;
 }
 
 /* Hamburger Menu Animation */
@@ -1286,22 +1287,22 @@ input:checked + .slider:before {
     }
     
     .nav-links {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        height: 100vh;
-        background-color: var(--background-color);
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transition: var(--transition);
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-    }
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    height: 100vh;
+    background-color: var(--background-color);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: right 0.3s ease; /* Pastikan hanya transisi right */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
     
     .nav-links.active {
-        right: 0;
+        right: 0 !important;
     }
     
     .nav-links li {
