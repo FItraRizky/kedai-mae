@@ -1,16 +1,16 @@
-document.addEventListener('DOMContentLoaded', function() {
+Document.addEventListener('DOMContentLoaded', function() {
     // Enhanced Sticky Header with smoother transition
     const header = document.getElementById('header');
     let lastScroll = 0;
-    
+
     window.addEventListener('scroll', function() {
         const currentScroll = window.scrollY;
-        
+
         if (currentScroll <= 0) {
             header.classList.remove('header-scrolled');
             return;
         }
-        
+
         if (currentScroll > lastScroll && currentScroll > 100) {
             // Scrolling down
             header.classList.add('header-scrolled');
@@ -20,103 +20,142 @@ document.addEventListener('DOMContentLoaded', function() {
             header.classList.add('header-scrolled');
             header.style.transform = 'translateY(0)';
         }
-        
+
         lastScroll = currentScroll;
     });
 
-    // Enhanced Mobile Menu with staggered animation
+    // --- START: MODIFIED MOBILE MENU CODE (Hanya Bagian Ini yang Diubah) ---
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
     const navItems = document.querySelectorAll('.nav-links li');
 
-    hamburger.addEventListener('click', function() {
-    this.classList.toggle('active');
-    // Add this line to toggle 'is-active' class as well.
-    // This is crucial if your CSS uses 'is-active' to transform the hamburger icon into an 'X'.
-    this.classList.toggle('is-active');
-    navLinks.classList.toggle('active');
-    
-    // Animate hamburger to X
-    if (this.classList.contains('active')) {
-        navLinks.style.right = '0';
-        navItems.forEach((item, index) => {
-            item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s`;
-            item.style.opacity = '1';
-            item.style.transform = 'translateX(0)';
-        });
-    } else {
-        navLinks.style.right = '-100%';
-        navItems.forEach((item, index) => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateX(20px)';
-        });
+    // **INITIATE ON LOAD:** Pastikan menu tersembunyi saat halaman pertama kali dimuat jika di mobile
+    // Ini penting jika CSS Anda tidak secara default menyembunyikannya pada viewport mobile.
+    // Asumsi: Menu seharusnya tersembunyi dengan 'right: -100%' atau 'transform: translateX(100%)'
+    // Tambahkan style ini hanya jika menu seharusnya tidak terlihat saat awal load di mobile.
+    // Jika CSS Anda sudah menanganinya, baris ini bisa diabaikan atau dihapus.
+    if (window.innerWidth <= 768) {
+        // Cek apakah menu tidak seharusnya aktif saat load
+        if (!navLinks.classList.contains('active') && navLinks.style.right !== '-100%') {
+             navLinks.style.right = '-100%'; // Sembunyikan menu secara eksplisit jika belum
+        }
     }
-});
+
+
+    hamburger.addEventListener('click', function() {
+        // Toggle 'active' class pada hamburger untuk transformasinya (misal jadi 'X')
+        this.classList.toggle('active');
+        // Tetap gunakan is-active jika CSS Anda memerlukannya. Saya kembalikan seperti kode Anda.
+        this.classList.toggle('is-active'); 
+        
+        // Toggle 'active' class pada navLinks untuk mengontrol visibilitas/posisinya
+        navLinks.classList.toggle('active');
+
+        // Kontrol posisi menu secara eksplisit berdasarkan class 'active'
+        if (navLinks.classList.contains('active')) {
+            navLinks.style.right = '0'; // Tampilkan menu
+            navItems.forEach((item, index) => {
+                // Pastikan state awal untuk transisi
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+                // Terapkan transisi dan state akhir
+                item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s`;
+                setTimeout(() => { // Sedikit delay agar transisi bisa diterapkan
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, 10);
+            });
+        } else {
+            navLinks.style.right = '-100%'; // Sembunyikan menu
+            // Animasi item keluar sebelum container menu tertutup sepenuhnya
+            navItems.forEach((item, index) => {
+                // Ubah urutan delay agar animasi menutup lebih alami (dari bawah ke atas/kanan ke kiri)
+                item.style.transition = `opacity 0.3s ease ${ (navItems.length - 1 - index) * 0.05}s, transform 0.3s ease ${ (navItems.length - 1 - index) * 0.05}s`;
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+            });
+        }
+    });
 
     // Close mobile menu when clicking a link with smooth transition
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
+            if (window.innerWidth <= 768) { // Hanya berlaku untuk viewport mobile
+                e.preventDefault(); // Cegah perilaku default link segera
                 const target = link.getAttribute('href');
-                
-                // Animate menu closing first
-                navItems.forEach(item => {
+
+                // Animasi item menu keluar terlebih dahulu
+                navItems.forEach((item, index) => {
+                    item.style.transition = `opacity 0.3s ease ${ (navItems.length - 1 - index) * 0.05}s, transform 0.3s ease ${ (navItems.length - 1 - index) * 0.05}s`;
                     item.style.opacity = '0';
                     item.style.transform = 'translateX(20px)';
                 });
-                
+
+                // Setelah animasi item selesai, tutup container menu dan scroll
                 setTimeout(() => {
-                    navLinks.classList.remove('active');
-                    hamburger.classList.remove('active');
-                    hamburger.classList.remove('is-active'); // Ensure 'is-active' is also removed when a link is clicked
-                    
-                    // Then scroll to target
+                    navLinks.classList.remove('active'); // Hapus class active
+                    navLinks.style.right = '-100%'; // Sembunyikan container menu secara eksplisit
+                    hamburger.classList.remove('active'); // Reset ikon hamburger
+                    hamburger.classList.remove('is-active'); // Pastikan 'is-active' juga dihapus
+
+                    // Kemudian scroll ke target
                     if (target.startsWith('#')) {
                         const targetElement = document.querySelector(target);
                         if (targetElement) {
+                            // Hitung offset berdasarkan tinggi header dinamis
+                            const headerHeight = document.getElementById('header').offsetHeight;
+                            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                            const offsetPosition = targetPosition - headerHeight;
+
                             window.scrollTo({
-                                top: targetElement.offsetTop - 80,
+                                top: offsetPosition,
                                 behavior: 'smooth'
                             });
+                        } else {
+                            // Fallback jika target tidak ditemukan (jarang untuk hash links)
+                            window.location.href = target;
                         }
+                    } else {
+                        // Untuk link eksternal atau full page link, langsung navigasi
+                        window.location.href = target;
                     }
-                }, 300);
+                }, 300); // Tunggu animasi item menu selesai (sesuaikan jika perlu)
             }
         });
     });
+    // --- END: MODIFIED MOBILE MENU CODE ---
 
     // Enhanced Smooth Scrolling with offset
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
-            if (this.getAttribute('href') === '#') return;
-            
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-            
-            if (targetElement) {
-                const headerHeight = document.getElementById('header').offsetHeight;
-                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                const offsetPosition = targetPosition - headerHeight;
-                
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
+            // Hindari double handling jika sudah ditangani oleh mobile menu's click listener
+            if (window.innerWidth > 768 || !this.closest('.nav-links')) {
+                if (this.getAttribute('href') === '#') return;
+
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    const headerHeight = document.getElementById('header').offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                    const offsetPosition = targetPosition - headerHeight;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
             }
         });
     });
 
-    
-
     // Menu Tab System with fade transition
     const tabBtns = document.querySelectorAll('.tab-btn');
     const menuCategories = document.querySelectorAll('.menu-category');
-    
+
     tabBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            // Remove active class from all buttons and categories
             tabBtns.forEach(btn => btn.classList.remove('active'));
             menuCategories.forEach(category => {
                 category.style.opacity = '0';
@@ -125,14 +164,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     category.classList.remove('active');
                 }, 300);
             });
-            
-            // Add active class to clicked button
+
             this.classList.add('active');
-            
-            // Show corresponding category with fade-in effect
+
             const categoryId = this.getAttribute('data-category');
             const activeCategory = document.getElementById(categoryId);
-            
+
             setTimeout(() => {
                 activeCategory.classList.add('active');
                 setTimeout(() => {
@@ -157,7 +194,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // Initialize animated elements with staggered delay
     const animatedElements = document.querySelectorAll('.menu-item, .info-item, .about-img, .about-text');
     animatedElements.forEach((element, index) => {
         element.style.opacity = '0';
@@ -166,13 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.addEventListener('scroll', animateOnScroll);
-    animateOnScroll(); // Run once on page load
+    animateOnScroll();
 
     // Enhanced Dark Mode Functionality
     const themeToggle = document.getElementById('theme-toggle');
     const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-    // Check for saved user preference or system preference
     const currentTheme = localStorage.getItem('theme');
     if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
         document.body.classList.add('dark-mode');
@@ -180,7 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateThemeIcon();
     }
 
-    // Listen for toggle changes
     themeToggle.addEventListener('change', function() {
         if (this.checked) {
             document.body.classList.add('dark-mode');
@@ -207,9 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Order Overlay Functionality
     document.querySelectorAll('.menu-item .btn').forEach(button => {
         button.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent default button action if any
+            e.preventDefault();
 
-            // If it's an "Add to Cart" button, let cart.js handle it
             if (this.classList.contains('add-to-cart')) {
                 return;
             }
@@ -253,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             document.body.appendChild(orderOverlay);
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
 
             const orderQuantityInput = orderOverlay.querySelector('#order-quantity');
             const orderTotalDisplay = orderOverlay.querySelector('#order-total-display');
@@ -270,45 +303,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
             orderQuantityInput.addEventListener('input', updateOrderTotal);
 
-            const phone = '6287878177527'; // Ganti dengan nomor WhatsApp Anda
+            const phone = '6287878177527';
             const waLink = `https://wa.me/${phone}`;
 
-            // Close order overlay
             orderOverlay.querySelector('.close-order').addEventListener('click', () => {
                 document.body.removeChild(orderOverlay);
                 document.body.style.overflow = 'auto';
             });
-            
+
             orderOverlay.querySelector('.btn-cancel').addEventListener('click', () => {
                 document.body.removeChild(orderOverlay);
                 document.body.style.overflow = 'auto';
             });
-            
-            // Confirm order
+
             orderOverlay.querySelector('.btn-confirm').addEventListener('click', () => {
                 const name = orderOverlay.querySelector('#order-name').value;
                 const quantity = orderOverlay.querySelector('#order-quantity').value;
                 const notes = orderOverlay.querySelector('#order-notes').value;
-                
+
                 if (!name) {
                     alert('Silakan masukkan nama Anda');
                     return;
                 }
-                
+
                 if (!quantity || quantity < 1) {
                     alert('Jumlah pesanan tidak valid');
                     return;
                 }
-                
+
                 const message = `Halo, saya ingin memesan:\nProduk: ${itemName}\nJumlah: ${quantity}\nTotal: ${orderTotalDisplay.textContent}\nNama: ${name}\nCatatan: ${notes || '-'}\n\nTerima kasih!`;
-                
+
                 const encodedMessage = encodeURIComponent(message);
                 window.open(`${waLink}&text=${encodedMessage}`, '_blank');
                 document.body.removeChild(orderOverlay);
                 document.body.style.overflow = 'auto';
             });
-            
-            // Close when clicking outside
+
             orderOverlay.addEventListener('click', (e) => {
                 if (e.target === orderOverlay) {
                     document.body.removeChild(orderOverlay);
