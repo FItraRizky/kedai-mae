@@ -14,15 +14,13 @@
     --font-size-lg: 1.3rem;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background-color: #1E1E1E;
-        --secondary-color: #2D2D2D;
-        --text-color: #F0F0F0;
-        --light-text: #B0B0B0;
-        --border-color: #444444;
-        --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
+.dark-mode {
+    --background-color: #1E1E1E;
+    --secondary-color: #2D2D2D;
+    --text-color: #F0F0F0;
+    --light-text: #B0B0B0;
+    --border-color: #444444;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 * {
