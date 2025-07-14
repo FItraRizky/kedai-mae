@@ -30,20 +30,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const navItems = document.querySelectorAll('.nav-links li');
 
     hamburger.addEventListener('click', function() {
-    // Toggle menu state
     this.classList.toggle('active');
     navLinks.classList.toggle('active');
     
     // Animate hamburger to X
     if (this.classList.contains('active')) {
-        // Menu opening animation
+        navLinks.style.right = '0';
         navItems.forEach((item, index) => {
-            item.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+            item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s`;
             item.style.opacity = '1';
             item.style.transform = 'translateX(0)';
         });
     } else {
-        // Menu closing animation
+        navLinks.style.right = '-100%';
         navItems.forEach((item, index) => {
             item.style.opacity = '0';
             item.style.transform = 'translateX(20px)';
@@ -105,6 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    
 
     // Menu Tab System with fade transition
     const tabBtns = document.querySelectorAll('.tab-btn');
