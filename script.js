@@ -143,11 +143,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enhanced Animation on Scroll
     const animateOnScroll = function() {
         const elements = document.querySelectorAll('.menu-item, .info-item, .about-img, .about-text');
-        
         elements.forEach(element => {
             const elementPosition = element.getBoundingClientRect().top;
             const screenPosition = window.innerHeight / 1.3;
-            
+
             if (elementPosition < screenPosition) {
                 element.style.opacity = '1';
                 element.style.transform = 'translateY(0)';
@@ -169,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enhanced Dark Mode Functionality
     const themeToggle = document.getElementById('theme-toggle');
     const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     // Check for saved user preference or system preference
     const currentTheme = localStorage.getItem('theme');
     if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
@@ -177,11 +176,9 @@ document.addEventListener('DOMContentLoaded', function() {
         themeToggle.checked = true;
         updateThemeIcon();
     }
-    
-    // Listen for toggle changes with smooth transition
+
+    // Listen for toggle changes
     themeToggle.addEventListener('change', function() {
-        document.body.style.transition = 'background-color 0.9s ease, color 0.9s ease';
-        
         if (this.checked) {
             document.body.classList.add('dark-mode');
             localStorage.setItem('theme', 'dark');
@@ -189,71 +186,62 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.remove('dark-mode');
             localStorage.setItem('theme', 'light');
         }
-        
         updateThemeIcon();
-        
-        // Reset transition after mode change
-        setTimeout(() => {
-            document.body.style.transition = '';
-        }, 500);
     });
-    
-    // Update icon based on theme with animation
+
     function updateThemeIcon() {
         const moonIcon = document.querySelector('.fa-moon');
         const sunIcon = document.querySelector('.fa-sun');
-        
         if (document.body.classList.contains('dark-mode')) {
-            moonIcon.style.transition = 'opacity 0.6s ease';
-            sunIcon.style.transition = 'opacity 0.6s ease';
-            moonIcon.style.opacity = '0.5';
-            sunIcon.style.opacity = '1';
-        } else {
-            moonIcon.style.transition = 'opacity 06s ease';
-            sunIcon.style.transition = 'opacity 0.6s ease';
             moonIcon.style.opacity = '1';
             sunIcon.style.opacity = '0.5';
+        } else {
+            moonIcon.style.opacity = '0.5';
+            sunIcon.style.opacity = '1';
         }
     }
-    
-    // Initial icon update
-    updateThemeIcon();
 
-    // Enhanced Ordering System with Form
-    document.querySelectorAll('.btn[href^="https://wa.me/6287878177527"]').forEach(orderBtn => {
-        orderBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const waLink = this.getAttribute('href');
+    // Order Overlay Functionality
+    document.querySelectorAll('.menu-item .btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default button action if any
+
+            // If it's an "Add to Cart" button, let cart.js handle it
+            if (this.classList.contains('add-to-cart')) {
+                return;
+            }
+
             const menuItem = this.closest('.menu-item');
             const itemName = menuItem.querySelector('h3').textContent;
-            const itemPrice = menuItem.querySelector('.price').textContent;
-            
-            // Create order form overlay
+            const itemPriceText = menuItem.querySelector('.price').textContent;
+            const itemPrice = parseInt(itemPriceText.replace(/\D/g, ''));
+            const itemImage = menuItem.querySelector('.item-img img').src;
+
             const orderOverlay = document.createElement('div');
-            orderOverlay.className = 'order-overlay';
+            orderOverlay.className = 'order-overlay active';
             orderOverlay.innerHTML = `
                 <div class="order-form">
-                    <div class="order-header">
-                        <h3>Pesan ${itemName}</h3>
-                        <span class="close-order">&times;</span>
+                    <span class="close-order">&times;</span>
+                    <h2>Detail Pesanan</h2>
+                    <div class="order-product-info">
+                        <img id="order-product-img" src="${itemImage}" alt="${itemName}">
+                        <h3 id="order-product-name">${itemName}</h3>
+                        <p id="order-product-price">${itemPriceText}</p>
                     </div>
-                    <div class="order-body">
-                        <div class="form-group">
-                            <label for="order-name">Nama Anda</label>
-                            <input type="text" id="order-name" placeholder="Masukkan nama Anda" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="order-quantity">Jumlah Pesanan</label>
-                            <input type="number" id="order-quantity" min="1" value="1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="order-notes">Catatan Tambahan</label>
-                            <textarea id="order-notes" placeholder="Contoh: Pedas, Tidak pakai bawang, dll"></textarea>
-                        </div>
-                        <div class="order-summary">
-                            <p>Total: <span id="order-total">${itemPrice}</span></p>
-                        </div>
+                    <div class="form-group">
+                        <label for="order-quantity">Jumlah:</label>
+                        <input type="number" id="order-quantity" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="order-notes">Catatan (opsional):</label>
+                        <textarea id="order-notes" rows="3" placeholder="Contoh: tidak pedas, tanpa es, dll."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-name">Nama Anda:</label>
+                        <input type="text" id="order-name" placeholder="Masukkan nama Anda">
+                    </div>
+                    <div class="order-summary">
+                        <p>Total: <span id="order-total-display">${itemPriceText}</span></p>
                     </div>
                     <div class="order-footer">
                         <button class="btn btn-cancel">Batal</button>
@@ -261,26 +249,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-            
             document.body.appendChild(orderOverlay);
-            
-            // Calculate total price when quantity changes
-            const quantityInput = orderOverlay.querySelector('#order-quantity');
-            const totalDisplay = orderOverlay.querySelector('#order-total');
-            
-            quantityInput.addEventListener('change', function() {
-                const price = parseInt(itemPrice.replace(/\D/g, ''));
-                const total = price * this.value;
-                totalDisplay.textContent = `Rp ${total.toLocaleString('id-ID')}`;
-            });
-            
-            // Close overlay
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+
+            const orderQuantityInput = orderOverlay.querySelector('#order-quantity');
+            const orderTotalDisplay = orderOverlay.querySelector('#order-total-display');
+
+            const formatPrice = (price) => {
+                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+            };
+
+            const updateOrderTotal = () => {
+                const quantity = parseInt(orderQuantityInput.value);
+                const total = itemPrice * quantity;
+                orderTotalDisplay.textContent = formatPrice(total);
+            };
+
+            orderQuantityInput.addEventListener('input', updateOrderTotal);
+
+            const phone = '6287878177527'; // Ganti dengan nomor WhatsApp Anda
+            const waLink = `https://wa.me/${phone}`;
+
+            // Close order overlay
             orderOverlay.querySelector('.close-order').addEventListener('click', () => {
                 document.body.removeChild(orderOverlay);
+                document.body.style.overflow = 'auto';
             });
             
             orderOverlay.querySelector('.btn-cancel').addEventListener('click', () => {
                 document.body.removeChild(orderOverlay);
+                document.body.style.overflow = 'auto';
             });
             
             // Confirm order
@@ -299,24 +297,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                const message = `Halo, saya ingin memesan:
-Produk: ${itemName}
-Jumlah: ${quantity}
-Total: ${totalDisplay.textContent}
-Nama: ${name}
-Catatan: ${notes || '-'}
-
-Terima kasih!`;
+                const message = `Halo, saya ingin memesan:\nProduk: ${itemName}\nJumlah: ${quantity}\nTotal: ${orderTotalDisplay.textContent}\nNama: ${name}\nCatatan: ${notes || '-'}\n\nTerima kasih!`;
                 
                 const encodedMessage = encodeURIComponent(message);
                 window.open(`${waLink}&text=${encodedMessage}`, '_blank');
                 document.body.removeChild(orderOverlay);
+                document.body.style.overflow = 'auto';
             });
             
             // Close when clicking outside
             orderOverlay.addEventListener('click', (e) => {
                 if (e.target === orderOverlay) {
                     document.body.removeChild(orderOverlay);
+                    document.body.style.overflow = 'auto';
                 }
             });
         });

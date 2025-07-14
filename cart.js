@@ -97,73 +97,74 @@ class Cart {
     }
 
     formatPrice(price) {
-        return new Intl.NumberFormat('id-ID', { 
-            style: 'currency', 
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(price);
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
     }
 
     generateWhatsAppMessage() {
         let message = "Halo Kedai Mae, saya ingin memesan:\n\n";
-        
         this.items.forEach(item => {
             message += `➤ ${item.name}\n`;
-            message += `   Jumlah: ${item.quantity}\n`;
-            message += `   Harga: ${this.formatPrice(item.price)} (Total: ${this.formatPrice(item.price * item.quantity)})\n\n`;
+            message += ` Jumlah: ${item.quantity}\n`;
+            message += ` Harga: ${this.formatPrice(item.price)}\n`;
+            message += ` Subtotal: ${this.formatPrice(item.price * item.quantity)}\n\n`;
         });
-        
-        message += `*Total Pesanan:* ${this.formatPrice(this.getTotal())}\n\n`;
+        message += `Total Pesanan: ${this.formatPrice(this.getTotal())}\n\n`;
         message += "Terima kasih!";
-        
-        return encodeURIComponent(message);
+        return message;
     }
 }
 
-// Inisialisasi keranjang
-const cart = new Cart();
-
-// Event listeners untuk keranjang
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle keranjang
+    const cart = new Cart();
+
+    // Open Cart
     document.querySelector('.cart-icon').addEventListener('click', () => {
         document.querySelector('.cart-overlay').classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
     });
 
+    // Close Cart
     document.querySelector('.close-cart').addEventListener('click', () => {
         document.querySelector('.cart-overlay').classList.remove('active');
+        document.body.style.overflow = 'auto'; // Allow scrolling
     });
 
+    // Close cart when clicking outside
     document.querySelector('.cart-overlay').addEventListener('click', (e) => {
-        if (e.target === document.querySelector('.cart-overlay')) {
+        if (e.target.classList.contains('cart-overlay')) {
             document.querySelector('.cart-overlay').classList.remove('active');
+            document.body.style.overflow = 'auto'; // Allow scrolling
         }
     });
 
-    // Delegasi event untuk keranjang
-    document.addEventListener('input', (e) => {
-        if (e.target.matches('.cart-item-actions input[type="number"]')) {
+    // Update quantity
+    document.querySelector('.cart-items').addEventListener('change', function(e) {
+        if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
             const id = e.target.dataset.id;
-            const quantity = parseInt(e.target.value) || 1;
+            const quantity = parseInt(e.target.value);
             cart.updateQuantity(id, quantity);
         }
     });
 
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('.remove-item')) {
-            const id = e.target.closest('.remove-item').dataset.id;
+    // Remove item
+    document.querySelector('.cart-items').addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
+            const id = e.target.dataset.id || e.target.closest('.remove-item').dataset.id;
             cart.removeItem(id);
         }
     });
 
-    // Checkout
-    document.querySelector('.btn-checkout').addEventListener('click', () => {
-        if (cart.items.length > 0) {
-            const phone = '6287878177527';
-            const message = cart.generateWhatsAppMessage();
-            window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
-            cart.clearCart();
+    // Handle checkout button (Lanjut ke WhatsApp)
+    document.querySelector('.btn-checkout').addEventListener('click', function() {
+        if (cart.items.length === 0) {
+            alert('Keranjang Anda kosong. Silakan tambahkan item terlebih dahulu.');
+            return;
         }
+
+        const phone = '6287878177527'; // Ganti dengan nomor WhatsApp Anda
+        const message = cart.generateWhatsAppMessage();
+        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+        cart.clearCart();
     });
 
     // Tambahkan item ke keranjang

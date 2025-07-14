@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Header & Navigasi -->
     <header id="header">
         <div class="container">
             <nav class="navbar">
@@ -37,7 +36,6 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
     <div class="container">
         <div class="hero-content">
@@ -51,7 +49,6 @@
     </div>
 </section>
 
-    <!-- Tentang Kami -->
     <section id="tentang" class="section about">
         <div class="container">
             <h2 class="section-title">Tentang Kami</h2>
@@ -69,7 +66,6 @@
         </div>
     </section>
 
-    <!-- Menu Section -->
     <section id="menu" class="section menu">
         <div class="container">
             <h2 class="section-title">Menu Kami</h2>
@@ -80,7 +76,6 @@
             </div>
 
             <div class="menu-items">
-                <!-- Makanan -->
                 <div class="menu-category active" id="makanan">
                     <div class="menu-item" data-id="nasi-goreng-special">
                         <div class="item-img">
@@ -109,17 +104,30 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="menu-item" data-id="sate-ayam-madura">
+                        <div class="item-img">
+                            <img src="https://images.unsplash.com/photo-1621996366033-0c460064f260?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Sate Ayam Madura">
+                        </div>
+                        <div class="item-details">
+                            <h3>Sate Ayam Madura</h3>
+                            <p>10 tusuk sate ayam empuk dengan bumbu kacang khas Madura</p>
+                            <div class="item-footer">
+                                <span class="price">Rp 30.000</span>
+                                <button class="btn add-to-cart">Pesan</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Minuman -->
                 <div class="menu-category" id="minuman">
                     <div class="menu-item" data-id="es-teh-manis">
                         <div class="item-img">
-                            <img src="https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Es Teh Manis">
+                            <img src="https://images.unsplash.com/photo-1521986321226-c07338421b06?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Es Teh Manis">
                         </div>
                         <div class="item-details">
                             <h3>Es Teh Manis</h3>
-                            <p>Es teh dengan gula pasir pilihan, disajikan dingin menyegarkan</p>
+                            <p>Es teh hitam segar dengan gula asli</p>
                             <div class="item-footer">
                                 <span class="price">Rp 5.000</span>
                                 <button class="btn add-to-cart">Pesan</button>
@@ -142,15 +150,14 @@
                     </div>
                 </div>
 
-                <!-- Makanan Ringan -->
                 <div class="menu-category" id="snack">
                     <div class="menu-item" data-id="kentang-goreng">
                         <div class="item-img">
-                            <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1527&q=80" alt="Kentang Goreng">
+                            <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Kentang Goreng">
                         </div>
                         <div class="item-details">
                             <h3>Kentang Goreng</h3>
-                            <p>Kentang goreng renyah dengan bumbu spesial, disajikan dengan saus tomat</p>
+                            <p>Kentang goreng renyah dengan saus pilihan</p>
                             <div class="item-footer">
                                 <span class="price">Rp 12.000</span>
                                 <button class="btn add-to-cart">Pesan</button>
@@ -158,15 +165,15 @@
                         </div>
                     </div>
 
-                    <div class="menu-item" data-id="roti-bakar">
+                    <div class="menu-item" data-id="roti-bakar-coklat">
                         <div class="item-img">
-                            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Roti Bakar">
+                            <img src="https://images.unsplash.com/photo-1625944222880-9286820579e0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Roti Bakar Coklat Keju">
                         </div>
                         <div class="item-details">
-                            <h3>Roti Bakar</h3>
-                            <p>Roti bakar dengan olesan mentega, meses, dan keju leleh</p>
+                            <h3>Roti Bakar Coklat Keju</h3>
+                            <p>Roti bakar dengan lelehan coklat dan parutan keju</p>
                             <div class="item-footer">
-                                <span class="price">Rp 10.000</span>
+                                <span class="price">Rp 18.000</span>
                                 <button class="btn add-to-cart">Pesan</button>
                             </div>
                         </div>
@@ -176,7 +183,6 @@
         </div>
     </section>
 
-    <!-- Kontak Section -->
     <section id="kontak" class="section contact">
         <div class="container">
             <h2 class="section-title">Hubungi Kami</h2>
@@ -184,47 +190,51 @@
                 <div class="contact-info">
                     <div class="info-item">
                         <i class="fas fa-map-marker-alt"></i>
-                        <p>Jl. Raya Kedai No. 123, Kota Kita, Indonesia</p>
+                        <div>
+                            <h4>Alamat</h4>
+                            <p>Jl. Raya Kedai No. 123, Kota Kita</p>
+                        </div>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-phone"></i>
-                        <p>0812-3456-7890</p>
+                        <div>
+                            <h4>Telepon</h4>
+                            <p>087878177527</p>
+                        </div>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-envelope"></i>
-                        <p>info@kedaikita.com</p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-clock"></i>
-                        <p>Senin - Minggu<br>08:00 - 22:00 WIB</p>
+                        <div>
+                            <h4>Email</h4>
+                            <p>info@kedaimae.com</p>
+                        </div>
                     </div>
                     <div class="social-links">
-                        <a href="https://wa.me/6287878177527" class="social-link"><i class="fab fa-whatsapp"></i></a>
-                        <a href="https://instagram.com/kedaikita" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="https://facebook.com/kedaikita" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                 <div class="contact-map">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.1980306180367!2d105.29056519999999!3d-5.3867591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40db6abfa31fa1%3A0x517bb6f4a283dfde!2sGg.%20Urip%20Sentosa%20I%2C%20Kec.%20Sukarame%2C%20Kota%20Bandar%20Lampung%2C%20Lampung%2035133!5e0!3m2!1sen!2sid!4v1752427904145!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.0792070119934!2d106.8209849147699!3d-6.20876359550974!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3d9d3d3d3d3%3A0x6b6c6b6c6b6c6b6c!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678901234567!5m2!1sen!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-logo">
-                    <a href="index.html" class="logo">Kedai<span>Kita</span></a>
-                    <p>Menghidangkan makanan dan minuman berkualitas dengan cita rasa autentik</p>
+                <div class="footer-about">
+                    <h3>Kedai Mae</h3>
+                    <p>Menghidangkan makanan dan minuman berkualitas dengan cita rasa autentik sejak 2024.</p>
                 </div>
                 <div class="footer-links">
                     <h3>Tautan Cepat</h3>
                     <ul>
                         <li><a href="index.html">Beranda</a></li>
                         <li><a href="#menu">Menu</a></li>
-                        <li><a href="#tentang">Tentang Kami</a></li>
+                        <li><a href="#tentang">Tentang</a></li>
                         <li><a href="#kontak">Kontak</a></li>
                     </ul>
                 </div>
@@ -241,7 +251,6 @@
         </div>
     </footer>
 
-    <!-- Cart Overlay -->
     <div class="cart-overlay">
         <div class="cart">
             <div class="cart-header">
@@ -268,6 +277,37 @@
     <div class="cart-icon">
         <i class="fas fa-shopping-cart"></i>
         <span class="cart-count">0</span>
+    </div>
+
+    <div class="order-overlay">
+        <div class="order-form">
+            <span class="close-order">&times;</span>
+            <h2>Detail Pesanan</h2>
+            <div class="order-product-info">
+                <img id="order-product-img" src="" alt="Product Image">
+                <h3 id="order-product-name"></h3>
+                <p id="order-product-price"></p>
+            </div>
+            <div class="form-group">
+                <label for="order-quantity">Jumlah:</label>
+                <input type="number" id="order-quantity" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label for="order-notes">Catatan (opsional):</label>
+                <textarea id="order-notes" rows="3" placeholder="Contoh: tidak pedas, tanpa es, dll."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="order-name">Nama Anda:</label>
+                <input type="text" id="order-name" placeholder="Masukkan nama Anda">
+            </div>
+            <div class="order-summary">
+                <p>Total: <span id="order-total-display">Rp 0</span></p>
+            </div>
+            <div class="order-footer">
+                <button class="btn btn-cancel">Batal</button>
+                <button class="btn btn-confirm">Konfirmasi Pesanan</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
