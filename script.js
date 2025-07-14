@@ -236,117 +236,104 @@ document.addEventListener('click', function(event) {
         }
     }
 
-    // Order Overlay Functionality
-    document.querySelectorAll('.menu-item .btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent default button action if any
+    function createOrderOverlay({ itemName, itemPrice, itemPriceText, itemImage }) {
+        const overlay = document.createElement('div');
+        overlay.className = 'order-overlay active';
+        overlay.innerHTML = `
+            <div class="order-form" tabindex="-1">
+                <span class="close-order" aria-label="Tutup">&times;</span>
+                <h2>Detail Pesanan</h2>
+                <div class="order-product-info">
+                    <img id="order-product-img" src="${itemImage}" alt="${itemName}">
+                    <h3 id="order-product-name">${itemName}</h3>
+                    <p id="order-product-price">${itemPriceText}</p>
+                </div>
+                <div class="form-group">
+                    <label for="order-quantity">Jumlah:</label>
+                    <input type="number" id="order-quantity" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="order-notes">Catatan (opsional):</label>
+                    <textarea id="order-notes" rows="3" placeholder="Contoh: tidak pedas, tanpa es, dll."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="order-name">Nama Anda:</label>
+                    <input type="text" id="order-name" placeholder="Masukkan nama Anda">
+                </div>
+                <div class="order-summary">
+                    <p>Total: <span id="order-total-display">${itemPriceText}</span></p>
+                </div>
+                <div class="order-footer">
+                    <button class="btn btn-cancel">Batal</button>
+                    <button class="btn btn-confirm">Konfirmasi Pesanan</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+        overlay.querySelector('.order-form').focus();
+        return overlay;
+    }
 
-            // If it's an "Add to Cart" button, let cart.js handle it
-            if (this.classList.contains('add-to-cart')) {
+    function closeOrderOverlay(overlay) {
+        if (overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    function handleOrderButtonClick(e) {
+        e.preventDefault();
+        if (this.classList.contains('add-to-cart')) return;
+
+        const menuItem = this.closest('.menu-item');
+        const itemName = menuItem.querySelector('h3').textContent;
+        const itemPriceText = menuItem.querySelector('.price').textContent;
+        const itemPrice = parseInt(itemPriceText.replace(/\D/g, ''));
+        const itemImage = menuItem.querySelector('.item-img img').src;
+
+        const overlay = createOrderOverlay({ itemName, itemPrice, itemPriceText, itemImage });
+
+        const orderQuantityInput = overlay.querySelector('#order-quantity');
+        const orderTotalDisplay = overlay.querySelector('#order-total-display');
+        const formatPrice = price => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+
+        orderQuantityInput.addEventListener('input', () => {
+            const quantity = parseInt(orderQuantityInput.value) || 1;
+            orderTotalDisplay.textContent = formatPrice(itemPrice * quantity);
+        });
+
+        const closeHandler = () => closeOrderOverlay(overlay);
+        overlay.querySelector('.close-order').addEventListener('click', closeHandler);
+        overlay.querySelector('.btn-cancel').addEventListener('click', closeHandler);
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) closeHandler();
+        });
+
+        overlay.querySelector('.btn-confirm').addEventListener('click', () => {
+            const name = overlay.querySelector('#order-name').value.trim();
+            const quantity = overlay.querySelector('#order-quantity').value;
+            const notes = overlay.querySelector('#order-notes').value.trim();
+
+            if (!name) {
+                alert('Silakan masukkan nama Anda');
+                return;
+            }
+            if (!quantity || quantity < 1) {
+                alert('Jumlah pesanan tidak valid');
                 return;
             }
 
-            const menuItem = this.closest('.menu-item');
-            const itemName = menuItem.querySelector('h3').textContent;
-            const itemPriceText = menuItem.querySelector('.price').textContent;
-            const itemPrice = parseInt(itemPriceText.replace(/\D/g, ''));
-            const itemImage = menuItem.querySelector('.item-img img').src;
-
-            const orderOverlay = document.createElement('div');
-            orderOverlay.className = 'order-overlay active';
-            orderOverlay.innerHTML = `
-                <div class="order-form">
-                    <span class="close-order">&times;</span>
-                    <h2>Detail Pesanan</h2>
-                    <div class="order-product-info">
-                        <img id="order-product-img" src="${itemImage}" alt="${itemName}">
-                        <h3 id="order-product-name">${itemName}</h3>
-                        <p id="order-product-price">${itemPriceText}</p>
-                    </div>
-                    <div class="form-group">
-                        <label for="order-quantity">Jumlah:</label>
-                        <input type="number" id="order-quantity" value="1" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="order-notes">Catatan (opsional):</label>
-                        <textarea id="order-notes" rows="3" placeholder="Contoh: tidak pedas, tanpa es, dll."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="order-name">Nama Anda:</label>
-                        <input type="text" id="order-name" placeholder="Masukkan nama Anda">
-                    </div>
-                    <div class="order-summary">
-                        <p>Total: <span id="order-total-display">${itemPriceText}</span></p>
-                    </div>
-                    <div class="order-footer">
-                        <button class="btn btn-cancel">Batal</button>
-                        <button class="btn btn-confirm">Konfirmasi Pesanan</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(orderOverlay);
-            document.body.style.overflow = 'hidden'; // Prevent scrolling when order overlay is open
-
-            const orderQuantityInput = orderOverlay.querySelector('#order-quantity');
-            const orderTotalDisplay = orderOverlay.querySelector('#order-total-display');
-
-            const formatPrice = (price) => {
-                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
-            };
-
-            const updateOrderTotal = () => {
-                const quantity = parseInt(orderQuantityInput.value);
-                const total = itemPrice * quantity;
-                orderTotalDisplay.textContent = formatPrice(total);
-            };
-
-            orderQuantityInput.addEventListener('input', updateOrderTotal);
-
-            const phone = '6287878177527'; // Ganti dengan nomor WhatsApp Anda
-            const waLink = `https://wa.me/${phone}`;
-
-            // Close order overlay
-            orderOverlay.querySelector('.close-order').addEventListener('click', () => {
-                document.body.removeChild(orderOverlay);
-                document.body.style.overflow = 'auto'; // Mengizinkan scrolling kembali
-            });
-            
-            orderOverlay.querySelector('.btn-cancel').addEventListener('click', () => {
-                document.body.removeChild(orderOverlay);
-                document.body.style.overflow = 'auto'; // Mengizinkan scrolling kembali
-            });
-            
-            // Confirm order
-            orderOverlay.querySelector('.btn-confirm').addEventListener('click', () => {
-                const name = orderOverlay.querySelector('#order-name').value;
-                const quantity = orderOverlay.querySelector('#order-quantity').value;
-                const notes = orderOverlay.querySelector('#order-notes').value;
-                
-                if (!name) {
-                    alert('Silakan masukkan nama Anda');
-                    return;
-                }
-                
-                if (!quantity || quantity < 1) {
-                    alert('Jumlah pesanan tidak valid');
-                    return;
-                }
-                
-                const message = `Halo, saya ingin memesan:\nProduk: ${itemName}\nJumlah: ${quantity}\nTotal: ${orderTotalDisplay.textContent}\nNama: ${name}\nCatatan: ${notes || '-'}\n\nTerima kasih!`;
-                
-                const encodedMessage = encodeURIComponent(message);
-                window.open(`${waLink}&text=${encodedMessage}`, '_blank');
-                document.body.removeChild(orderOverlay);
-                document.body.style.overflow = 'auto'; // Mengizinkan scrolling kembali
-            });
-            
-            // Close when clicking outside order overlay
-            orderOverlay.addEventListener('click', (e) => {
-                if (e.target === orderOverlay) {
-                    document.body.removeChild(orderOverlay);
-                    document.body.style.overflow = 'auto'; // Mengizinkan scrolling kembali
-                }
-            });
+            const message = `Halo, saya ingin memesan:\nProduk: ${itemName}\nJumlah: ${quantity}\nTotal: ${orderTotalDisplay.textContent}\nNama: ${name}\nCatatan: ${notes || '-'}\n\nTerima kasih!`;
+            const encodedMessage = encodeURIComponent(message);
+            const phone = '6287878177527';
+            window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+            closeOrderOverlay(overlay);
         });
+    }
+
+    // Attach event listeners
+    document.querySelectorAll('.menu-item .btn').forEach(button => {
+        button.addEventListener('click', handleOrderButtonClick);
     });
 });
