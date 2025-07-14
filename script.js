@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     hamburger.addEventListener('click', function() {
     this.classList.toggle('active');
+    // Add this line to toggle 'is-active' class as well.
+    // This is crucial if your CSS uses 'is-active' to transform the hamburger icon into an 'X'.
+    this.classList.toggle('is-active');
     navLinks.classList.toggle('active');
     
     // Animate hamburger to X
@@ -66,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     navLinks.classList.remove('active');
                     hamburger.classList.remove('active');
-                    hamburger.classList.remove('is-active');
+                    hamburger.classList.remove('is-active'); // Ensure 'is-active' is also removed when a link is clicked
                     
                     // Then scroll to target
                     if (target.startsWith('#')) {
