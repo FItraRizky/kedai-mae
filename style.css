@@ -1435,3 +1435,52 @@ input:checked + .slider:before {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* Tambahan dark mode untuk catering */
+.dark-mode .section.catering {
+    background: var(--secondary-color);
+}
+.dark-mode .catering-form {
+    background: var(--background-color);
+    color: var(--text-color);
+}
+.dark-mode .catering-info {
+    background: #232323;
+    color: var(--text-color);
+}
+.dark-mode .catering-form input,
+.dark-mode .catering-form textarea {
+    background-color: #232323;
+    color: var(--text-color);
+    border-color: #444;
+}
+.dark-mode .catering-form input:focus,
+.dark-mode .catering-form textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(255, 166, 48, 0.15);
+}
+.dark-mode .catering-form label,
+.dark-mode .catering-info h3 {
+    color: var(--primary-color);
+}
+.dark-mode .catering-info li {
+    color: var(--text-color);
+}
+
+/* Parallax background for catering section (desktop only) */
+.section.catering {
+    background: linear-gradient(rgba(255,251,233,0.92), rgba(255,251,233,0.92)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+}
+@media (max-width: 900px) {
+    .section.catering {
+        background-attachment: scroll;
+        background-size: cover;
+        background-position: center;
+    }
+}
+.dark-mode .section.catering {
+    background: linear-gradient(rgba(30,30,30,0.92), rgba(30,30,30,0.92)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+    background-size: cover;
+}

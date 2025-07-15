@@ -12,6 +12,14 @@
         <div class="container">
             <nav class="navbar">
                 <a href="index.html" class="logo">Kedai<span>Mae</span></a>
+                <div class="theme-switcher">
+                    <i class="fas fa-moon"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <i class="fas fa-sun"></i>
+                </div>
                 <ul class="nav-links">
                     <li><a href="index.html">Beranda</a></li>
                     <li><a href="index.html#menu">Menu</a></li>
@@ -109,6 +117,36 @@
         const section = document.querySelector('.fade-in-section');
         if(section) {
           section.classList.add('fade-in-active');
+        }
+        // Dark mode logic (copy dari index.html)
+        const themeToggle = document.getElementById('theme-toggle');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+          document.body.classList.add('dark-mode');
+          themeToggle.checked = true;
+          updateThemeIcon();
+        }
+        themeToggle.addEventListener('change', function() {
+          if (this.checked) {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+          } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+          }
+          updateThemeIcon();
+        });
+        function updateThemeIcon() {
+          const moonIcon = document.querySelector('.fa-moon');
+          const sunIcon = document.querySelector('.fa-sun');
+          if (document.body.classList.contains('dark-mode')) {
+            moonIcon.style.opacity = '1';
+            sunIcon.style.opacity = '0.5';
+          } else {
+            moonIcon.style.opacity = '0.5';
+            sunIcon.style.opacity = '1';
+          }
         }
       });
     </script>
