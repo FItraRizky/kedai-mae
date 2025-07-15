@@ -196,4 +196,33 @@ document.addEventListener('DOMContentLoaded', function() {
   enableSmoothScroll();
 });
 window.addEventListener('scroll', revealOnScroll);
-window.addEventListener('scroll', revealContactInfo); 
+window.addEventListener('scroll', revealContactInfo);
+
+// TAB MENU MAKANAN/MINUMAN/SNACK
+function enableMenuTabs() {
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const menuCategories = document.querySelectorAll('.menu-category');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const cat = this.getAttribute('data-category');
+      menuCategories.forEach(catDiv => {
+        if (catDiv.id === cat) {
+          catDiv.classList.add('active');
+        } else {
+          catDiv.classList.remove('active');
+        }
+      });
+      // Reset animasi muncul menu-item
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('visible');
+        item.style.animationDelay = '';
+      });
+      setTimeout(revealOnScroll, 100);
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded', function() {
+  enableMenuTabs();
+}); 
