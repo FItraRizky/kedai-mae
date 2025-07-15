@@ -123,6 +123,28 @@ document.addEventListener('DOMContentLoaded', function() {
       cateringForm.reset();
     });
   }
+  // ESTIMASI HARGA OTOMATIS FORM CATERING
+  const estimasiInput = document.getElementById('catering-estimasi');
+  const totalInput = document.getElementById('catering-total');
+  const menuInput = document.getElementById('catering-menu');
+  // Rata-rata harga per porsi (bisa disesuaikan)
+  const AVG_PRICE = 20000;
+  function updateEstimasiHarga() {
+    let total = parseInt(totalInput?.value) || 0;
+    if (total < 10) total = 0;
+    // Bisa tambahkan parsing menuInput untuk deteksi jumlah porsi per menu
+    let estimasi = total * AVG_PRICE;
+    if (estimasiInput) {
+      estimasiInput.value = estimasi > 0 ? estimasi.toLocaleString('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}) : '';
+    }
+  }
+  if (totalInput && estimasiInput) {
+    totalInput.addEventListener('input', updateEstimasiHarga);
+    menuInput?.addEventListener('input', updateEstimasiHarga);
+    cateringForm?.addEventListener('reset', function() {
+      setTimeout(() => { estimasiInput.value = ''; }, 50);
+    });
+  }
 });
 
 // NOTIFIKASI TOAST
@@ -251,4 +273,28 @@ function enableMenuSearch() {
 document.addEventListener('DOMContentLoaded', function() {
   enableMenuTabs();
   enableMenuSearch();
+});
+
+// PARALLAX JS UNTUK SECTION CATERING (AGAR MUNCUL DI IOS/MOBILE)
+function enableCateringParallax() {
+  const cateringSection = document.querySelector('.section.catering');
+  if (!cateringSection) return;
+  // Deteksi iOS atau mobile
+  const isMobile = window.innerWidth < 900 || /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (!isMobile) return;
+  // Simulasi parallax: geser background-position saat scroll
+  function parallaxScroll() {
+    const rect = cateringSection.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const offset = cateringSection.offsetTop;
+    const y = Math.max(0, scrollTop + window.innerHeight - offset);
+    // Atur background position Y (efek parallax)
+    cateringSection.style.backgroundPosition = `center ${-y * 0.15}px`;
+  }
+  window.addEventListener('scroll', parallaxScroll);
+  // Inisialisasi posisi awal
+  parallaxScroll();
+}
+document.addEventListener('DOMContentLoaded', function() {
+  enableCateringParallax();
 }); 
