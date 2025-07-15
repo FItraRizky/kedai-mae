@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Stok | Kedai Mae</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+      .admin-login, .admin-panel {max-width:400px;margin:60px auto;padding:32px;background:#fffbe9;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.07);}
+      .admin-panel {display:none;}
+      .admin-panel h2 {margin-bottom:20px;}
+      .stok-table {width:100%;margin-bottom:20px;}
+      .stok-table th, .stok-table td {padding:8px 6px;text-align:left;}
+      .stok-table th {color:var(--primary-color);}
+      .stok-table input {width:60px;text-align:center;}
+      .logout-btn {margin-top:10px;}
+      .notif {color:green;margin-bottom:10px;}
+      @media (max-width:600px){.admin-login,.admin-panel{padding:16px;}}
+      .dark-mode .admin-login, .dark-mode .admin-panel {background:#232323;color:var(--text-color);}
+      .dark-mode .stok-table th {color:var(--primary-color);}
+      .dark-mode .stok-table input {background:#232323;color:var(--text-color);border:1px solid #444;}
+    </style>
+</head>
+<body class="admin-bg">
+    <div class="admin-login">
+        <h2>Login Admin Stok</h2>
+        <input type="password" id="admin-pass" placeholder="Password admin">
+        <button id="login-btn" class="btn" style="width:100%;margin-top:12px;">Login</button>
+        <p id="login-error" style="color:red;display:none;margin-top:10px;">Password salah!</p>
+    </div>
+    <div class="admin-panel">
+        <h2>Manajemen Stok Menu</h2>
+        <div class="notif" id="stok-notif" style="display:none;">Stok berhasil disimpan!</div>
+        <form id="stok-form">
+            <table class="stok-table">
+                <thead>
+                    <tr><th>Menu</th><th>Stok</th></tr>
+                </thead>
+                <tbody id="stok-tbody">
+                    <!-- Diisi JS -->
+                </tbody>
+            </table>
+            <button type="submit" class="btn">Simpan Stok</button>
+        </form>
+        <button class="btn btn-outline logout-btn" id="logout-btn">Logout</button>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html>
