@@ -370,7 +370,6 @@ document.addEventListener('click', function(event) {
     if (cateringForm) {
         const totalInput = document.getElementById('catering-total');
         const estimasiInput = document.getElementById('catering-estimasi');
-        // Ambil semua harga menu dari halaman
         function getAverageMenuPrice() {
             const priceEls = document.querySelectorAll('.menu-item .price');
             let total = 0;
@@ -382,6 +381,7 @@ document.addEventListener('click', function(event) {
                     count++;
                 }
             });
+            // Jika di pesan.html tidak ada menu, fallback ke 22000
             return count > 0 ? Math.round(total / count) : 22000;
         }
         totalInput.addEventListener('input', function() {

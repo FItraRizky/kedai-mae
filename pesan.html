@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemesanan Catering | Kedai Mae</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Kedai<span>Mae</span></a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Beranda</a></li>
+                    <li><a href="index.html#menu">Menu</a></li>
+                    <li><a href="index.html#tentang">Tentang</a></li>
+                    <li><a href="index.html#kontak">Kontak</a></li>
+                    <li><a href="pesan.html" class="active">Catering</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <section id="catering" class="section catering fade-in-section">
+        <div class="container">
+            <h2 class="section-title">Pemesanan Catering</h2>
+            <div class="catering-content">
+                <form id="catering-form" class="catering-form">
+                    <div class="form-group">
+                        <label for="catering-name">Nama Pemesan:</label>
+                        <input type="text" id="catering-name" required placeholder="Masukkan nama Anda">
+                    </div>
+                    <div class="form-group">
+                        <label for="catering-phone">No. Telepon/WA:</label>
+                        <input type="tel" id="catering-phone" required placeholder="08xxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label for="catering-event">Jenis Acara:</label>
+                        <input type="text" id="catering-event" placeholder="Contoh: Arisan, Meeting, Ulang Tahun, dll">
+                    </div>
+                    <div class="form-group">
+                        <label for="catering-date">Tanggal Acara:</label>
+                        <input type="date" id="catering-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="catering-menu">Menu Pilihan:</label>
+                        <textarea id="catering-menu" rows="3" required placeholder="Contoh: Nasi Goreng 20 porsi, Ayam Bakar 15 porsi, dll"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="catering-total">Total Porsi:</label>
+                        <input type="number" id="catering-total" min="10" required placeholder="Minimal 10">
+                    </div>
+                    <div class="form-group">
+                        <label for="catering-notes">Catatan Tambahan:</label>
+                        <textarea id="catering-notes" rows="2" placeholder="Permintaan khusus, alergi, dll (opsional)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="catering-estimasi">Estimasi Harga (Rp):</label>
+                        <input type="text" id="catering-estimasi" readonly style="font-weight:bold; color:var(--primary-color); background:#f5f5f5;">
+                    </div>
+                    <button type="submit" class="btn">Kirim Permintaan Catering</button>
+                </form>
+                <div class="catering-info">
+                    <h3>Kenapa pesan catering di Kedai Mae?</h3>
+                    <ul>
+                        <li>✔️ Menu bisa custom sesuai kebutuhan</li>
+                        <li>✔️ Harga spesial untuk jumlah besar</li>
+                        <li>✔️ Gratis konsultasi menu & porsi</li>
+                        <li>✔️ Cocok untuk arisan, kantor, ulang tahun, dll</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <h3>Kedai Mae</h3>
+                    <p>Menghidangkan makanan dan minuman berkualitas dengan cita rasa autentik sejak 2024.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Tautan Cepat</h3>
+                    <ul>
+                        <li><a href="index.html">Beranda</a></li>
+                        <li><a href="index.html#menu">Menu</a></li>
+                        <li><a href="index.html#tentang">Tentang</a></li>
+                        <li><a href="index.html#kontak">Kontak</a></li>
+                        <li><a href="pesan.html">Catering</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Kontak Kami</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Jl. Raya Kedai No. 123, Kota Kita</p>
+                    <p><i class="fas fa-phone"></i>087878177527</p>
+                    <p><i class="fas fa-envelope"></i> info@kedaimae.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Kedai mae. Semua Hak Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+    <script>
+      // Animasi fade-in saat halaman pesan dibuka
+      document.addEventListener('DOMContentLoaded', function() {
+        const section = document.querySelector('.fade-in-section');
+        if(section) {
+          section.classList.add('fade-in-active');
+        }
+      });
+    </script>
+</body>
+</html>
