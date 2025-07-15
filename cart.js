@@ -599,3 +599,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Integrasi ulang translate jika cart.js di-load setelah translate.js
+if (window.applyTranslation) {
+  document.addEventListener('DOMContentLoaded', function() {
+    const lang = localStorage.getItem('lang') || 'id';
+    window.applyTranslation(lang);
+    const langSwitcher = document.getElementById('lang-switcher');
+    if (langSwitcher) {
+      langSwitcher.value = lang;
+      langSwitcher.addEventListener('change', function() {
+        window.applyTranslation(this.value);
+      });
+    }
+  });
+}

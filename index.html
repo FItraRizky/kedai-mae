@@ -13,7 +13,14 @@
     <header id="header">
         <div class="container">
             <nav class="navbar">
-                <a href="index.html" class="logo" data-aos="fade-down" data-aos-delay="200">Kedai<span>Mae</span></a>
+                <a href="index.html" class="logo" data-aos="fade-down" data-aos-delay="200"><span data-translate="brand_name">Kedai</span><span>Mae</span></a>
+                <select id="lang-switcher" style="margin-right:16px;">
+                  <option value="id">🇮🇩 ID</option>
+                  <option value="en">🇬🇧 EN</option>
+                  <option value="ko">🇰🇷 KO</option>
+                  <option value="ja">🇯🇵 JA</option>
+                  <option value="fr">🇫🇷 FR</option>
+                </select>
                 <div class="theme-switcher">
                     <i class="fas fa-moon"></i>
                     <label class="switch">
@@ -23,11 +30,11 @@
                     <i class="fas fa-sun"></i>
                 </div>
                 <ul class="nav-links">
-                    <li data-aos="fade-down" data-aos-delay="0"><a href="index.html">Beranda</a></li>
-                    <li data-aos="fade-down" data-aos-delay="200"><a href="#menu">Menu</a></li>
-                    <li data-aos="fade-down" data-aos-delay="400"><a href="#tentang">Tentang</a></li>
-                    <li data-aos="fade-down" data-aos-delay="600"><a href="#kontak">Kontak</a></li>
-                    <li data-aos="fade-down" data-aos-delay="800"><a href="pesan.html">Catering</a></li>
+                    <li data-aos="fade-down" data-aos-delay="0"><a href="index.html" data-translate="nav_home"></a></li>
+                    <li data-aos="fade-down" data-aos-delay="200"><a href="#menu" data-translate="nav_menu"></a></li>
+                    <li data-aos="fade-down" data-aos-delay="400"><a href="#tentang" data-translate="nav_about"></a></li>
+                    <li data-aos="fade-down" data-aos-delay="600"><a href="#kontak" data-translate="nav_contact"></a></li>
+                    <li data-aos="fade-down" data-aos-delay="800"><a href="pesan.html" data-translate="nav_catering"></a></li>
                 </ul>
                 <div class="hamburger">
                     <span class="bar"></span>
@@ -41,11 +48,11 @@
     <section class="hero">
     <div class="container">
         <div class="hero-content">
-            <h1 class="floating-letters">Selamat Datang di <span class="glow-text">Kedai Mae</span></h1>
-            <p class="typewriter">Menghidangkan makanan dan minuman berkualitas dengan cita rasa autentik sejak 2024</p>
+            <h1 class="floating-letters"><span data-translate="hero_title"></span> <span class="glow-text">Kedai Mae</span></h1>
+            <p class="typewriter" data-translate="hero_subtitle"></p>
             <div class="hero-btns">
-                <a href="#menu" class="btn">Lihat Menu</a>
-                <a href="#kontak" class="btn btn-outline">Pesan Sekarang</a>
+                <a href="#menu" class="btn" data-translate="see_menu"></a>
+                <a href="#kontak" class="btn btn-outline" data-translate="order_now"></a>
             </div>
         </div>
     </div>
@@ -53,16 +60,16 @@
 
     <section id="tentang" class="section about">
         <div class="container">
-            <h2 class="section-title">Tentang Kami</h2>
+            <h2 class="section-title" data-translate="about_title"></h2>
             <div class="about-content">
                 <div class="about-img">
                     <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Interior Kedai Kita">
                 </div>
                 <div class="about-text">
-                    <h2>Kedai Kita</h2>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem, suscipit. Id aliquid iste, quis reprehenderit adipisci harum sapiente hic natus quia at. Aut dicta magni cupiditate tenetur fugit nulla eaque sed eius odio excepturi enim molestiae optio in atque ipsam sequi hic, harum ducimus minima, exercitationem eos laudantium debitis molestias?.<p>
-                    <p>testa</p>
-                    <p>test</p>
+                    <h2 data-translate="about_brand"></h2>
+                    <p data-translate="about_desc1"></p>
+                    <p data-translate="about_desc2"></p>
+                    <p data-translate="about_desc3"></p>
                 </div>
             </div>
         </div>
@@ -70,14 +77,14 @@
 
     <section id="menu" class="section menu">
         <div class="container">
-            <h2 class="section-title">Menu Kami</h2>
+            <h2 class="section-title" data-translate="menu_title"></h2>
             <div class="menu-search" style="text-align:center; margin-bottom:30px;">
-                <input type="text" id="menu-search-input" placeholder="Cari menu makanan/minuman/snack..." style="width: 320px; max-width:90%; padding: 10px 16px; border-radius: 25px; border: 1px solid var(--border-color); font-size:1rem;">
+                <input type="text" id="menu-search-input" data-translate-placeholder="search_placeholder" style="width: 320px; max-width:90%; padding: 10px 16px; border-radius: 25px; border: 1px solid var(--border-color); font-size:1rem;">
             </div>
             <div class="menu-tabs">
-                <button class="tab-btn active" data-category="makanan">Makanan</button>
-                <button class="tab-btn" data-category="minuman">Minuman</button>
-                <button class="tab-btn" data-category="snack">Makanan Ringan</button>
+                <button class="tab-btn active" data-category="makanan" data-translate="tab_makanan"></button>
+                <button class="tab-btn" data-category="minuman" data-translate="tab_minuman"></button>
+                <button class="tab-btn" data-category="snack" data-translate="tab_snack"></button>
             </div>
 
             <div class="menu-items">
@@ -191,28 +198,28 @@
 
     <section id="kontak" class="section contact">
         <div class="container">
-            <h2 class="section-title">Hubungi Kami</h2>
+            <h2 class="section-title" data-translate="contact_title"></h2>
             <div class="contact-content">
                 <div class="contact-info">
                     <div class="info-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <div>
-                            <h4>Alamat</h4>
-                            <p>Jl. Raya Kedai No. 123, Kota Kita</p>
+                            <h4 data-translate="contact_address_label"></h4>
+                            <p data-translate="contact_address"></p>
                         </div>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-phone"></i>
                         <div>
-                            <h4>Telepon</h4>
-                            <p>087878177527</p>
+                            <h4 data-translate="contact_phone_label"></h4>
+                            <p data-translate="contact_phone"></p>
                         </div>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-envelope"></i>
                         <div>
-                            <h4>Email</h4>
-                            <p>info@kedaimae.com</p>
+                            <h4 data-translate="contact_email_label"></h4>
+                            <p data-translate="contact_email"></p>
                         </div>
                     </div>
                     <div class="social-links">
@@ -234,27 +241,27 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-about">
-                    <h3>Kedai Mae</h3>
-                    <p>Menghidangkan makanan dan minuman berkualitas dengan cita rasa autentik sejak 2024.</p>
+                    <h3 data-translate="footer_brand"></h3>
+                    <p data-translate="footer_desc"></p>
                 </div>
                 <div class="footer-links">
-                    <h3>Tautan Cepat</h3>
+                    <h3 data-translate="footer_quicklinks"></h3>
                     <ul>
-                        <li><a href="index.html">Beranda</a></li>
-                        <li><a href="#menu">Menu</a></li>
-                        <li><a href="#tentang">Tentang</a></li>
-                        <li><a href="#kontak">Kontak</a></li>
+                        <li><a href="index.html" data-translate="footer_link_home"></a></li>
+                        <li><a href="#menu" data-translate="footer_link_menu"></a></li>
+                        <li><a href="#tentang" data-translate="footer_link_about"></a></li>
+                        <li><a href="#kontak" data-translate="footer_link_contact"></a></li>
                     </ul>
                 </div>
                 <div class="footer-contact">
-                    <h3>Kontak Kami</h3>
+                    <h3 data-translate="footer_contact"></h3>
                     <p><i class="fas fa-map-marker-alt"></i> Jl. Raya Kedai No. 123, Kota Kita</p>
                     <p><i class="fas fa-phone"></i>087878177527</p>
                     <p><i class="fas fa-envelope"></i> info@kedaimae.com</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Kedai mae. Semua Hak Dilindungi.</p>
+                <p data-translate="footer_copyright"></p>
             </div>
         </div>
     </footer>
@@ -322,10 +329,10 @@
             <div class="form-group">
                 <label for="order-spicy">Tingkat Kepedasan:</label>
                 <select id="order-spicy">
-                    <option value="tidak pedas">Tidak Pedas</option>
-                    <option value="sedang">Sedang</option>
-                    <option value="pedas">Pedas</option>
-                    <option value="pedas banget">Pedas Banget</option>
+                    <option value="tidak pedas" data-translate="spicy_not">Tidak Pedas</option>
+                    <option value="sedang" data-translate="spicy_medium">Sedang</option>
+                    <option value="pedas" data-translate="spicy_hot">Pedas</option>
+                    <option value="pedas banget" data-translate="spicy_very_hot">Pedas Banget</option>
                 </select>
             </div>
             <div class="form-group payment-instructions" style="display:none">
@@ -369,6 +376,7 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="translate.js"></script>
     <script src="cart.js"></script>
 </body>
 </html>
