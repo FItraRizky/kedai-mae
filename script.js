@@ -154,6 +154,7 @@ if (hamburger && navLinks && navItems.length) {
                 setTimeout(() => {
                     activeCategory.style.opacity = '1';
                     activeCategory.style.transform = 'translateY(0)';
+                    updateStokMenuUI(); // update stok badge setiap tab berubah
                 }, 10);
             }, 300); // Sesuaikan dengan durasi transisi keluar sebelumnya
         });
