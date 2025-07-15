@@ -364,4 +364,37 @@ document.addEventListener('click', function(event) {
     document.querySelectorAll('.menu-item .btn').forEach(button => {
         button.addEventListener('click', handleOrderButtonClick);
     });
+
+    // Catering Kalkulator & Kirim WhatsApp
+    const cateringForm = document.getElementById('catering-form');
+    if (cateringForm) {
+        const totalInput = document.getElementById('catering-total');
+        const estimasiInput = document.getElementById('catering-estimasi');
+        const hargaRata = 22000; // Bisa diubah sesuai kebutuhan
+        totalInput.addEventListener('input', function() {
+            const total = parseInt(this.value) || 0;
+            if (total >= 10) {
+                estimasiInput.value = (total * hargaRata).toLocaleString('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0});
+            } else {
+                estimasiInput.value = '';
+            }
+        });
+        cateringForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nama = document.getElementById('catering-name').value.trim();
+            const phone = document.getElementById('catering-phone').value.trim();
+            const event = document.getElementById('catering-event').value.trim();
+            const date = document.getElementById('catering-date').value;
+            const menu = document.getElementById('catering-menu').value.trim();
+            const total = document.getElementById('catering-total').value;
+            const notes = document.getElementById('catering-notes').value.trim();
+            const estimasi = document.getElementById('catering-estimasi').value;
+            if (!nama || !phone || !date || !menu || !total) {
+                alert('Mohon lengkapi data utama.');
+                return;
+            }
+            const msg = `Halo Kedai Mae, saya ingin pesan catering/group order:\nNama: ${nama}\nNo. WA: ${phone}\nAcara: ${event}\nTanggal: ${date}\nMenu: ${menu}\nTotal Porsi: ${total}\nEstimasi Harga: ${estimasi}\nCatatan: ${notes || '-'}\n\nMohon konfirmasi & konsultasi lebih lanjut. Terima kasih!`;
+            window.open(`https://wa.me/6287878177527?text=${encodeURIComponent(msg)}`,'_blank');
+        });
+    }
 });

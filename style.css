@@ -1222,6 +1222,100 @@ input:checked + .slider:before {
     background-color: #555;
 }
 
+/* Catering/Group Order Section */
+.section.catering {
+    background: #fffbe9;
+    padding: 80px 0;
+}
+.catering-content {
+    display: flex;
+    gap: 50px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.catering-form {
+    flex: 2;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 35px 30px;
+    min-width: 320px;
+    max-width: 500px;
+    margin-bottom: 30px;
+}
+.catering-form .form-group {
+    margin-bottom: 18px;
+}
+.catering-form label {
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-bottom: 6px;
+    display: block;
+}
+.catering-form input,
+.catering-form textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #fffbe9;
+    color: var(--text-color);
+    transition: var(--transition);
+}
+.catering-form input:focus,
+.catering-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(255, 166, 48, 0.15);
+}
+.catering-form button.btn {
+    width: 100%;
+    margin-top: 10px;
+    font-size: 1.1rem;
+}
+.catering-info {
+    flex: 1;
+    background: var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 30px 25px;
+    min-width: 250px;
+    max-width: 350px;
+    margin-bottom: 30px;
+}
+.catering-info h3 {
+    color: var(--primary-color);
+    margin-bottom: 18px;
+    font-size: 1.2rem;
+}
+.catering-info ul {
+    list-style: none;
+    padding: 0;
+}
+.catering-info li {
+    margin-bottom: 12px;
+    color: var(--text-color);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+.catering-info li::before {
+    content: '✔️';
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+@media (max-width: 900px) {
+    .catering-content {
+        flex-direction: column;
+        gap: 30px;
+    }
+    .catering-form, .catering-info {
+        max-width: 100%;
+        min-width: unset;
+    }
+}
+
 /* Responsive Styles */
 @media (max-width: 992px) {
     .about-content {
