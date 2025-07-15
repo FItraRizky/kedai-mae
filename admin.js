@@ -9,7 +9,16 @@ const defaultStok = [
   {id:'roti-bakar-coklat', name:'Roti Bakar Coklat Keju', stok:10}
 ];
 function getStokList() {
-  return JSON.parse(localStorage.getItem('kedaiMaeStok')||'null') || defaultStok;
+  try {
+    const data = JSON.parse(localStorage.getItem('kedaiMaeStok')||'null');
+    if (Array.isArray(data) && data.length > 0 && data[0].id && data[0].stok !== undefined) {
+      return data;
+    }
+    return defaultStok;
+  } catch (e) {
+    console.error('Gagal parse stok:', e);
+    return defaultStok;
+  }
 }
 function saveStokList(list) {
   localStorage.setItem('kedaiMaeStok', JSON.stringify(list));
@@ -37,11 +46,24 @@ function renderStokTable(){
   const list = getStokList();
   const tbody = document.getElementById('stok-tbody');
   tbody.innerHTML = '';
+  if (!Array.isArray(list) || list.length === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan='2' style='color:red;text-align:center'>Data stok tidak ditemukan</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
   list.forEach(item=>{
+    if (!item.name || item.stok === undefined) return;
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${item.name}</td><td><input type='number' min='0' value='${item.stok}' data-id='${item.id}'></td>`;
     tbody.appendChild(tr);
   });
+  if (tbody.innerHTML.trim() === '') {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan='2' style='color:red;text-align:center'>Data stok tidak ditemukan</td>`;
+    tbody.appendChild(tr);
+  }
+  console.log('Render stok:', list);
 }
 // Simpan stok
   document.getElementById('stok-form').onsubmit = function(e){
@@ -54,4 +76,5 @@ function renderStokTable(){
     saveStokList(list);
     document.getElementById('stok-notif').style.display='block';
     setTimeout(()=>{document.getElementById('stok-notif').style.display='none';},2000);
+    renderStokTable(); // refresh table
   };
