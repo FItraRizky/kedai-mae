@@ -39,30 +39,35 @@
         <div class="container">
             <h2 class="section-title">Pemesanan Catering</h2>
             <div class="catering-content">
-                <form id="catering-form" class="catering-form">
-                    <div class="form-group">
+                <form id="catering-form" class="catering-form" novalidate>
+                    <div class="form-group" id="group-catering-name">
                         <label for="catering-name">Nama Pemesan:</label>
                         <input type="text" id="catering-name" required placeholder="Masukkan nama Anda">
+                        <div class="form-error"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="group-catering-phone">
                         <label for="catering-phone">No. Telepon/WA:</label>
                         <input type="tel" id="catering-phone" required placeholder="08xxxxxxxxxx">
+                        <div class="form-error"></div>
                     </div>
                     <div class="form-group">
                         <label for="catering-event">Jenis Acara:</label>
                         <input type="text" id="catering-event" placeholder="Contoh: Arisan, Meeting, Ulang Tahun, dll">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="group-catering-date">
                         <label for="catering-date">Tanggal Acara:</label>
                         <input type="date" id="catering-date" required>
+                        <div class="form-error"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="group-catering-menu">
                         <label for="catering-menu">Menu Pilihan:</label>
                         <textarea id="catering-menu" rows="3" required placeholder="Contoh: Nasi Goreng 20 porsi, Ayam Bakar 15 porsi, dll"></textarea>
+                        <div class="form-error"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="group-catering-total">
                         <label for="catering-total">Total Porsi:</label>
                         <input type="number" id="catering-total" min="10" required placeholder="Minimal 10">
+                        <div class="form-error"></div>
                     </div>
                     <div class="form-group">
                         <label for="catering-notes">Catatan Tambahan:</label>

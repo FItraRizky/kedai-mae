@@ -1531,3 +1531,69 @@ input:checked + .slider:before {
   box-shadow: none !important;
   opacity: 0.7;
 }
+
+.toast-notif {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+  background: #333;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+}
+.toast-notif.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) scale(1);
+}
+.toast-notif.success {
+  background: #2ecc40;
+}
+.toast-notif.error {
+  background: #ff5252;
+}
+.toast-notif.info {
+  background: #FFA630;
+}
+
+@keyframes fadeInUpSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.about-img.visible,
+.about-text.visible,
+.menu-item.visible,
+.info-item.visible {
+  animation: fadeInUpSmooth 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+.menu-item.visible {
+  /* akan diatur delay via JS */
+}
+.info-item.visible {
+  /* akan diatur delay via JS */
+}
+
+.btn, .btn-outline {
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.25s cubic-bezier(0.25,0.8,0.25,1);
+}
+.menu-item img {
+  transition: transform 0.5s cubic-bezier(0.25,0.8,0.25,1), filter 0.4s;
+}
+.menu-item:hover img {
+  filter: brightness(1.08) saturate(1.1);
+}
