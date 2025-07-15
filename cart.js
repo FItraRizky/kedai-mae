@@ -295,6 +295,8 @@ function showCartPaymentModal(cart, onSuccess) {
                     <option value="gopay">Gopay</option>
                     <option value="dana">Dana</option>
                     <option value="wa">Bayar via WhatsApp (COD/Manual)</option>
+                    <option value="midtrans">Midtrans (Otomatis)</option>
+                    <option value="xendit">Xendit (Otomatis)</option>
                 </select>
             </div>
             <div class="form-group payment-instructions" style="display:none">
@@ -322,6 +324,12 @@ function showCartPaymentModal(cart, onSuccess) {
                 <div id="cart-payment-wa" style="display:none">
                     <p>Silakan lanjutkan pembayaran atau konfirmasi langsung melalui WhatsApp admin. Klik Konfirmasi Pesanan untuk chat otomatis.</p>
                 </div>
+                <div id="cart-payment-midtrans" style="display:none">
+                    <p>Anda akan diarahkan ke halaman pembayaran Midtrans (simulasi/sandbox).</p>
+                </div>
+                <div id="cart-payment-xendit" style="display:none">
+                    <p>Anda akan diarahkan ke halaman pembayaran Xendit (simulasi/sandbox).</p>
+                </div>
             </div>
             <div class="form-group" id="cart-bukti-bayar-group" style="display:none">
                 <label for="cart-order-bukti">Upload Bukti Pembayaran:</label>
@@ -348,8 +356,8 @@ function showCartPaymentModal(cart, onSuccess) {
     const buktiBayarGroup = overlay.querySelector('#cart-bukti-bayar-group');
     function showPaymentInstructions(method) {
         paymentInstructions.style.display = 'block';
-        buktiBayarGroup.style.display = (method === 'wa') ? 'none' : 'block';
-        ['qris','transfer','ovo','gopay','dana','wa'].forEach(m => {
+        buktiBayarGroup.style.display = (method === 'wa' || method === 'midtrans' || method === 'xendit') ? 'none' : 'block';
+        ['qris','transfer','ovo','gopay','dana','wa','midtrans','xendit'].forEach(m => {
             const el = overlay.querySelector(`#cart-payment-${m}`);
             if (el) el.style.display = (m === method) ? 'block' : 'none';
         });
@@ -376,7 +384,7 @@ function showCartPaymentModal(cart, onSuccess) {
     // Confirm order logic
     overlay.querySelector('.btn-confirm').addEventListener('click', () => {
         const name = overlay.querySelector('#cart-order-name').value.trim();
-        const paymentMethod = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+        const paymentMethod = paymentMethodSelect.value;
         let buktiText = '';
         const buktiFile = overlay.querySelector('#cart-order-bukti').files[0];
         if (!name) {
@@ -388,7 +396,31 @@ function showCartPaymentModal(cart, onSuccess) {
             overlay.querySelector('#cart-order-name').focus();
             return;
         }
-        if (paymentMethodSelect.value !== 'wa' && buktiFile) {
+        if (['midtrans','xendit'].includes(paymentMethod)) {
+            closeHandler();
+            setTimeout(() => {
+                if (typeof showToast === 'function') showToast('Anda akan diarahkan ke halaman pembayaran otomatis.', 'info');
+                // Simulasi redirect ke sandbox
+                if (paymentMethod === 'midtrans') {
+                    window.open('https://simulator.sandbox.midtrans.com/', '_blank');
+                } else {
+                    window.open('https://checkout-staging.xendit.co/demo/', '_blank');
+                }
+            }, 500);
+            // Kurangi stok dan clear cart
+            const stok = getStokData();
+            cart.items.forEach(item => {
+                if (stok[item.id] !== undefined) {
+                    stok[item.id] = Math.max(0, stok[item.id] - item.quantity);
+                }
+            });
+            setStokData(stok);
+            cart.clearCart();
+            updateStokBadge();
+            if (onSuccess) onSuccess();
+            return;
+        }
+        if (paymentMethod !== 'wa' && buktiFile) {
             buktiText = `\nBukti pembayaran terlampir (lihat gambar).`;
         }
         const message = `Halo Kedai Mae, saya ingin memesan:\n\n${cart.items.map(item => `➤ ${item.name}\n Jumlah: ${item.quantity}\n Harga: ${cart.formatPrice(item.price)}\n Subtotal: ${cart.formatPrice(item.price * item.quantity)}\n`).join('\n')}Total Pesanan: ${cart.formatPrice(cart.getTotal())}\nNama: ${name}\nMetode Pembayaran: ${paymentMethod}${buktiText}\n\nTerima kasih!`;
@@ -396,12 +428,71 @@ function showCartPaymentModal(cart, onSuccess) {
         const phone = '6287878177527';
         window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
         closeHandler();
+        const stok = getStokData();
+        cart.items.forEach(item => {
+            if (stok[item.id] !== undefined) {
+                stok[item.id] = Math.max(0, stok[item.id] - item.quantity);
+            }
+        });
+        setStokData(stok);
+        cart.clearCart();
+        updateStokBadge();
         if (onSuccess) onSuccess();
         if (typeof showToast === 'function') {
             showToast('Pesanan berhasil dikirim! Silakan cek WhatsApp Anda untuk konfirmasi.', 'success');
         }
     });
 }
+
+// SISTEM STOK MENU
+const DEFAULT_STOK = {
+  'nasi-goreng-special': 10,
+  'mie-ayam-jamur': 8,
+  'sate-ayam-madura': 5,
+  'es-teh-manis': 20,
+  'jus-alpukat': 7,
+  'kentang-goreng': 12,
+  'roti-bakar-coklat': 6
+};
+function getStokData() {
+  let stok = localStorage.getItem('kedaiMaeStok');
+  if (!stok) {
+    localStorage.setItem('kedaiMaeStok', JSON.stringify(DEFAULT_STOK));
+    return {...DEFAULT_STOK};
+  }
+  return JSON.parse(stok);
+}
+function setStokData(stok) {
+  localStorage.setItem('kedaiMaeStok', JSON.stringify(stok));
+}
+function updateStokBadge() {
+  const stok = getStokData();
+  document.querySelectorAll('.menu-item').forEach(item => {
+    const id = item.dataset.id;
+    if (!id) return;
+    let badge = item.querySelector('.stok-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'stok-badge';
+      item.querySelector('h3').after(badge);
+    }
+    badge.textContent = `Stok: ${stok[id] ?? 0}`;
+    // Disable tombol jika stok habis
+    const btn = item.querySelector('.add-to-cart');
+    if (btn) {
+      if (stok[id] <= 0) {
+        btn.disabled = true;
+        btn.classList.add('btn-disabled');
+        btn.textContent = 'Stok Habis';
+      } else {
+        btn.disabled = false;
+        btn.classList.remove('btn-disabled');
+        btn.textContent = 'Pesan';
+      }
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded', updateStokBadge);
 
 // Attach event listeners (use event delegation if menu items are dynamic)
 document.querySelectorAll('.menu-item .btn').forEach(button => {
@@ -459,7 +550,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         showCartPaymentModal(cart, () => {
+            // Kurangi stok
+            const stok = getStokData();
+            cart.items.forEach(item => {
+                if (stok[item.id] !== undefined) {
+                    stok[item.id] = Math.max(0, stok[item.id] - item.quantity);
+                }
+            });
+            setStokData(stok);
             cart.clearCart();
+            updateStokBadge();
             if (typeof showToast === 'function') {
                 showToast('Pesanan berhasil dikirim! Silakan cek WhatsApp Anda untuk konfirmasi.', 'success');
             }
@@ -473,18 +573,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemId = menuItem.dataset.id;
             const itemName = menuItem.querySelector('h3').textContent;
             const itemPrice = parseInt(menuItem.querySelector('.price').textContent.replace(/\D/g, ''));
-            
+            const stok = getStokData();
+            if (stok[itemId] <= 0) {
+                if (typeof showToast === 'function') showToast('Stok habis!', 'error');
+                updateStokBadge();
+                return;
+            }
+            // Validasi jumlah di keranjang
+            const cartItems = JSON.parse(localStorage.getItem('kedaiMaeCart') || '[]');
+            const cartItem = cartItems.find(i => i.id === itemId);
+            if (cartItem && cartItem.quantity >= stok[itemId]) {
+                if (typeof showToast === 'function') showToast('Jumlah di keranjang melebihi stok!', 'error');
+                return;
+            }
             cart.addItem({
                 id: itemId,
                 name: itemName,
                 price: itemPrice,
                 quantity: 1
             });
-
-            // Tampilkan notifikasi toast
             if (typeof showToast === 'function') {
                 showToast(`${itemName} ditambahkan ke keranjang`, 'success');
             }
+            updateStokBadge();
         });
     });
 });
