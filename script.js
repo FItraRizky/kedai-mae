@@ -223,6 +223,32 @@ function enableMenuTabs() {
     });
   });
 }
+// FITUR PENCARIAN MENU
+function enableMenuSearch() {
+  const searchInput = document.getElementById('menu-search-input');
+  if (!searchInput) return;
+  searchInput.addEventListener('input', function() {
+    const keyword = this.value.trim().toLowerCase();
+    document.querySelectorAll('.menu-category').forEach(catDiv => {
+      let hasVisible = false;
+      catDiv.querySelectorAll('.menu-item').forEach(item => {
+        const name = item.querySelector('h3')?.textContent?.toLowerCase() || '';
+        const desc = item.querySelector('p')?.textContent?.toLowerCase() || '';
+        if (name.includes(keyword) || desc.includes(keyword)) {
+          item.style.display = '';
+          hasVisible = true;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      // Sembunyikan kategori jika tidak ada item yang cocok
+      if (catDiv.classList.contains('active')) {
+        catDiv.style.display = hasVisible ? 'grid' : 'none';
+      }
+    });
+  });
+}
 document.addEventListener('DOMContentLoaded', function() {
   enableMenuTabs();
+  enableMenuSearch();
 }); 

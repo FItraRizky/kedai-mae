@@ -243,12 +243,20 @@ function handleOrderButtonClick(e) {
         const notes = notesInput.value.trim();
 
         if (!name) {
-            alert('Silakan masukkan nama Anda');
+            if (typeof showToast === 'function') {
+                showToast('Silakan masukkan nama Anda', 'error');
+            } else {
+                alert('Silakan masukkan nama Anda');
+            }
             nameInput.focus();
             return;
         }
         if (!quantity || quantity < 1) {
-            alert('Jumlah pesanan tidak valid');
+            if (typeof showToast === 'function') {
+                showToast('Jumlah pesanan tidak valid', 'error');
+            } else {
+                alert('Jumlah pesanan tidak valid');
+            }
             orderQuantityInput.focus();
             return;
         }
@@ -258,6 +266,9 @@ function handleOrderButtonClick(e) {
         const phone = '6287878177527';
         window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
         closeHandler();
+        if (typeof showToast === 'function') {
+            showToast('Pesanan berhasil dikirim! Silakan cek WhatsApp Anda untuk konfirmasi.', 'success');
+        }
     });
 }
 
@@ -369,7 +380,11 @@ function showCartPaymentModal(cart, onSuccess) {
         let buktiText = '';
         const buktiFile = overlay.querySelector('#cart-order-bukti').files[0];
         if (!name) {
-            alert('Silakan masukkan nama Anda');
+            if (typeof showToast === 'function') {
+                showToast('Silakan masukkan nama Anda', 'error');
+            } else {
+                alert('Silakan masukkan nama Anda');
+            }
             overlay.querySelector('#cart-order-name').focus();
             return;
         }
@@ -382,6 +397,9 @@ function showCartPaymentModal(cart, onSuccess) {
         window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
         closeHandler();
         if (onSuccess) onSuccess();
+        if (typeof showToast === 'function') {
+            showToast('Pesanan berhasil dikirim! Silakan cek WhatsApp Anda untuk konfirmasi.', 'success');
+        }
     });
 }
 
@@ -433,10 +451,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle checkout button (Lanjut ke WhatsApp)
     document.querySelector('.btn-checkout').addEventListener('click', function() {
         if (cart.items.length === 0) {
-            alert('Keranjang Anda kosong. Silakan tambahkan item terlebih dahulu.');
+            if (typeof showToast === 'function') {
+                showToast('Keranjang Anda kosong. Silakan tambahkan item terlebih dahulu.', 'error');
+            } else {
+                alert('Keranjang Anda kosong. Silakan tambahkan item terlebih dahulu.');
+            }
             return;
         }
-        showCartPaymentModal(cart, () => cart.clearCart());
+        showCartPaymentModal(cart, () => {
+            cart.clearCart();
+            if (typeof showToast === 'function') {
+                showToast('Pesanan berhasil dikirim! Silakan cek WhatsApp Anda untuk konfirmasi.', 'success');
+            }
+        });
     });
 
     // Tambahkan item ke keranjang
@@ -454,22 +481,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 quantity: 1
             });
 
-            // Tampilkan notifikasi
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.innerHTML = `<i class="fas fa-check"></i> ${itemName} ditambahkan ke keranjang`;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
+            // Tampilkan notifikasi toast
+            if (typeof showToast === 'function') {
+                showToast(`${itemName} ditambahkan ke keranjang`, 'success');
+            }
         });
     });
 });

@@ -1597,3 +1597,24 @@ input:checked + .slider:before {
 .menu-item:hover img {
   filter: brightness(1.08) saturate(1.1);
 }
+
+.menu-search input {
+    border: 1.5px solid var(--primary-color);
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+    background: var(--secondary-color);
+    color: var(--text-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.menu-search input:focus {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 4px 16px rgba(255,166,48,0.08);
+}
+.dark-mode .menu-search input {
+    background: #232323;
+    color: var(--text-color);
+    border-color: #444;
+}
