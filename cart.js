@@ -261,6 +261,130 @@ function handleOrderButtonClick(e) {
     });
 }
 
+// Tambahkan modal pembayaran pada checkout keranjang
+function showCartPaymentModal(cart, onSuccess) {
+    const overlay = document.createElement('div');
+    overlay.className = 'order-overlay active';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.innerHTML = `
+        <div class="order-form" tabindex="-1">
+            <span class="close-order" aria-label="Tutup">&times;</span>
+            <h2>Pembayaran & Konfirmasi</h2>
+            <div class="form-group">
+                <label for="cart-order-name">Nama Anda:</label>
+                <input type="text" id="cart-order-name" placeholder="Masukkan nama Anda" autocomplete="name">
+            </div>
+            <div class="form-group">
+                <label for="cart-order-payment-method">Metode Pembayaran:</label>
+                <select id="cart-order-payment-method">
+                    <option value="qris">QRIS (All Bank/OVO/Gopay/Dana)</option>
+                    <option value="transfer">Transfer Bank</option>
+                    <option value="ovo">OVO</option>
+                    <option value="gopay">Gopay</option>
+                    <option value="dana">Dana</option>
+                    <option value="wa">Bayar via WhatsApp (COD/Manual)</option>
+                </select>
+            </div>
+            <div class="form-group payment-instructions" style="display:none">
+                <div id="cart-payment-qris" style="display:none">
+                    <p>Scan QRIS berikut untuk pembayaran:</p>
+                    <img src="qris-sample.png" alt="QRIS" style="max-width:200px;display:block;margin:10px auto;">
+                    <p>Atas Nama: Kedai Mae</p>
+                </div>
+                <div id="cart-payment-transfer" style="display:none">
+                    <p>Transfer ke rekening berikut:</p>
+                    <ul>
+                        <li>BCA: 1234567890 a.n. Kedai Mae</li>
+                        <li>Mandiri: 9876543210 a.n. Kedai Mae</li>
+                    </ul>
+                </div>
+                <div id="cart-payment-ovo" style="display:none">
+                    <p>Kirim ke OVO: 0812-3456-7890 a.n. Kedai Mae</p>
+                </div>
+                <div id="cart-payment-gopay" style="display:none">
+                    <p>Kirim ke Gopay: 0812-3456-7890 a.n. Kedai Mae</p>
+                </div>
+                <div id="cart-payment-dana" style="display:none">
+                    <p>Kirim ke Dana: 0812-3456-7890 a.n. Kedai Mae</p>
+                </div>
+                <div id="cart-payment-wa" style="display:none">
+                    <p>Silakan lanjutkan pembayaran atau konfirmasi langsung melalui WhatsApp admin. Klik Konfirmasi Pesanan untuk chat otomatis.</p>
+                </div>
+            </div>
+            <div class="form-group" id="cart-bukti-bayar-group" style="display:none">
+                <label for="cart-order-bukti">Upload Bukti Pembayaran:</label>
+                <input type="file" id="cart-order-bukti" accept="image/*">
+            </div>
+            <div class="order-summary">
+                <p>Total: <span id="cart-order-total-display">${cart.formatPrice(cart.getTotal())}</span></p>
+            </div>
+            <div class="order-footer">
+                <button class="btn btn-cancel" type="button">Batal</button>
+                <button class="btn btn-confirm" type="button">Konfirmasi Pesanan</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+    const orderForm = overlay.querySelector('.order-form');
+    orderForm.focus();
+    overlay.querySelector('#cart-order-name').focus();
+
+    // Payment method logic
+    const paymentMethodSelect = overlay.querySelector('#cart-order-payment-method');
+    const paymentInstructions = overlay.querySelector('.payment-instructions');
+    const buktiBayarGroup = overlay.querySelector('#cart-bukti-bayar-group');
+    function showPaymentInstructions(method) {
+        paymentInstructions.style.display = 'block';
+        buktiBayarGroup.style.display = (method === 'wa') ? 'none' : 'block';
+        ['qris','transfer','ovo','gopay','dana','wa'].forEach(m => {
+            const el = overlay.querySelector(`#cart-payment-${m}`);
+            if (el) el.style.display = (m === method) ? 'block' : 'none';
+        });
+    }
+    paymentMethodSelect.addEventListener('change', function() {
+        showPaymentInstructions(this.value);
+    });
+    showPaymentInstructions(paymentMethodSelect.value);
+
+    // Close logic
+    const closeHandler = () => {
+        overlay.parentNode.removeChild(overlay);
+        document.body.style.overflow = 'auto';
+    };
+    overlay.querySelector('.close-order').addEventListener('click', closeHandler);
+    overlay.querySelector('.btn-cancel').addEventListener('click', closeHandler);
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeHandler();
+    });
+    overlay.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeHandler();
+    });
+
+    // Confirm order logic
+    overlay.querySelector('.btn-confirm').addEventListener('click', () => {
+        const name = overlay.querySelector('#cart-order-name').value.trim();
+        const paymentMethod = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+        let buktiText = '';
+        const buktiFile = overlay.querySelector('#cart-order-bukti').files[0];
+        if (!name) {
+            alert('Silakan masukkan nama Anda');
+            overlay.querySelector('#cart-order-name').focus();
+            return;
+        }
+        if (paymentMethodSelect.value !== 'wa' && buktiFile) {
+            buktiText = `\nBukti pembayaran terlampir (lihat gambar).`;
+        }
+        const message = `Halo Kedai Mae, saya ingin memesan:\n\n${cart.items.map(item => `➤ ${item.name}\n Jumlah: ${item.quantity}\n Harga: ${cart.formatPrice(item.price)}\n Subtotal: ${cart.formatPrice(item.price * item.quantity)}\n`).join('\n')}Total Pesanan: ${cart.formatPrice(cart.getTotal())}\nNama: ${name}\nMetode Pembayaran: ${paymentMethod}${buktiText}\n\nTerima kasih!`;
+        const encodedMessage = encodeURIComponent(message);
+        const phone = '6287878177527';
+        window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+        closeHandler();
+        if (onSuccess) onSuccess();
+    });
+}
+
 // Attach event listeners (use event delegation if menu items are dynamic)
 document.querySelectorAll('.menu-item .btn').forEach(button => {
     button.addEventListener('click', handleOrderButtonClick);
@@ -312,11 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Keranjang Anda kosong. Silakan tambahkan item terlebih dahulu.');
             return;
         }
-
-        const phone = '6287878177527'; // Ganti dengan nomor WhatsApp Anda
-        const message = cart.generateWhatsAppMessage();
-        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
-        cart.clearCart();
+        showCartPaymentModal(cart, () => cart.clearCart());
     });
 
     // Tambahkan item ke keranjang

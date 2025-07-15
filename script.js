@@ -310,10 +310,32 @@ document.addEventListener('click', function(event) {
             if (e.target === overlay) closeHandler();
         });
 
+        // Setelah overlay dibuat (dalam createOrderOverlay atau handleOrderButtonClick)
+        const paymentMethodSelect = overlay.querySelector('#order-payment-method');
+        const paymentInstructions = overlay.querySelector('.payment-instructions');
+        const buktiBayarGroup = overlay.querySelector('#bukti-bayar-group');
+
+        function showPaymentInstructions(method) {
+            paymentInstructions.style.display = 'block';
+            // Field bukti hanya untuk metode non-WA
+            buktiBayarGroup.style.display = (method === 'wa') ? 'none' : 'block';
+            ['qris','transfer','ovo','gopay','dana','wa'].forEach(m => {
+                const el = overlay.querySelector(`#payment-${m}`);
+                if (el) el.style.display = (m === method) ? 'block' : 'none';
+            });
+        }
+        paymentMethodSelect.addEventListener('change', function() {
+            showPaymentInstructions(this.value);
+        });
+        // Tampilkan default QRIS saat overlay muncul
+        showPaymentInstructions(paymentMethodSelect.value);
+
+        // Pada konfirmasi pesanan:
         overlay.querySelector('.btn-confirm').addEventListener('click', () => {
             const name = overlay.querySelector('#order-name').value.trim();
             const quantity = overlay.querySelector('#order-quantity').value;
             const notes = overlay.querySelector('#order-notes').value.trim();
+            const spicy = overlay.querySelector('#order-spicy').value;
 
             if (!name) {
                 alert('Silakan masukkan nama Anda');
@@ -324,7 +346,13 @@ document.addEventListener('click', function(event) {
                 return;
             }
 
-            const message = `Halo, saya ingin memesan:\nProduk: ${itemName}\nJumlah: ${quantity}\nTotal: ${orderTotalDisplay.textContent}\nNama: ${name}\nCatatan: ${notes || '-'}\n\nTerima kasih!`;
+            const paymentMethod = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+            let buktiText = '';
+            const buktiFile = overlay.querySelector('#order-bukti').files[0];
+            if (paymentMethodSelect.value !== 'wa' && buktiFile) {
+                buktiText = `\nBukti pembayaran terlampir (lihat gambar).`;
+            }
+            const message = `Halo, saya ingin memesan:\nProduk: ${itemName}\nJumlah: ${quantity}\nTingkat Pedas: ${spicy}\nTotal: ${orderTotalDisplay.textContent}\nNama: ${name}\nMetode Pembayaran: ${paymentMethod}${buktiText}\nCatatan: ${notes || '-'}\n\nTerima kasih!`;
             const encodedMessage = encodeURIComponent(message);
             const phone = '6287878177527';
             window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
