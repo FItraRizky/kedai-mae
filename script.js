@@ -25,81 +25,68 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
-    // Hamburger Menu Functionality
+    // Hamburger Menu Functionality (juga aktif di pesan.html)
 const hamburger = document.querySelector('.hamburger');
 const navLinks = document.querySelector('.nav-links');
 const navItems = document.querySelectorAll('.nav-links li');
-
-hamburger.addEventListener('click', function() {
-    // Toggle class active
-    this.classList.toggle('active');
-    navLinks.classList.toggle('active');
-    
-    // Toggle body overflow
-    document.body.style.overflow = this.classList.contains('active') ? 'hidden' : 'auto';
-    
-    // Animate nav items
-    navItems.forEach((item, index) => {
-        if (this.classList.contains('active')) {
-            item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s`;
-            item.style.opacity = '1';
-            item.style.transform = 'translateX(0)';
-        } else {
-            item.style.opacity = '0';
-            item.style.transform = 'translateX(20px)';
-        }
+if (hamburger && navLinks && navItems.length) {
+    hamburger.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        document.body.style.overflow = this.classList.contains('active') ? 'hidden' : 'auto';
+        navItems.forEach((item, index) => {
+            if (this.classList.contains('active')) {
+                item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s`;
+                item.style.opacity = '1';
+                item.style.transform = 'translateX(0)';
+            } else {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+            }
+        });
     });
-});
-
-// Close menu when clicking a link
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768) {
-            e.preventDefault();
-            const target = link.getAttribute('href');
-            
-            // Animate out
+    // Close menu when clicking a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                const target = link.getAttribute('href');
+                navItems.forEach(item => {
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateX(20px)';
+                });
+                setTimeout(() => {
+                    hamburger.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                    if (target.startsWith('#')) {
+                        const targetElement = document.querySelector(target);
+                        if (targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 80,
+                                behavior: 'smooth'
+                            });
+                        }
+                    } else {
+                        window.location.href = target;
+                    }
+                }, 300);
+            }
+        });
+    });
+    // Close menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!hamburger.contains(event.target) && !navLinks.contains(event.target) && navLinks.classList.contains('active')) {
+            hamburger.classList.remove('active');
+            navLinks.classList.remove('active');
+            document.body.style.overflow = 'auto';
             navItems.forEach(item => {
                 item.style.opacity = '0';
                 item.style.transform = 'translateX(20px)';
             });
-            
-            // Close menu after animation
-            setTimeout(() => {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('active');
-                document.body.style.overflow = 'auto';
-                
-                // Navigate to target
-                if (target.startsWith('#')) {
-                    const targetElement = document.querySelector(target);
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                } else {
-                    window.location.href = target;
-                }
-            }, 300);
         }
     });
-});
-
-// Close menu when clicking outside
-document.addEventListener('click', function(event) {
-    if (!hamburger.contains(event.target) && !navLinks.contains(event.target) && navLinks.classList.contains('active')) {
-        hamburger.classList.remove('active');
-        navLinks.classList.remove('active');
-        document.body.style.overflow = 'auto';
-        
-        navItems.forEach(item => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateX(20px)';
-        });
-    }
-});
+}
   
 
     // Enhanced Smooth Scrolling with offset (untuk tautan di luar menu hamburger)
@@ -411,4 +398,60 @@ document.addEventListener('click', function(event) {
             window.open(`https://wa.me/6287878177527?text=${encodeURIComponent(msg)}`,'_blank');
         });
     }
+
+    // === Manajemen Stok Menu ===
+    function getStokList() {
+      return JSON.parse(localStorage.getItem('kedaiMaeStok')||'null') || [
+        {id:'nasi-goreng-special', stok:10},
+        {id:'mie-ayam-jamur', stok:10},
+        {id:'sate-ayam-madura', stok:10},
+        {id:'es-teh-manis', stok:10},
+        {id:'jus-alpukat', stok:10},
+        {id:'kentang-goreng', stok:10},
+        {id:'roti-bakar-coklat', stok:10}
+      ];
+    }
+    function updateStokMenuUI() {
+      const stokList = getStokList();
+      document.querySelectorAll('.menu-item').forEach(menuItem => {
+        const id = menuItem.dataset.id;
+        const stokObj = stokList.find(i=>i.id===id);
+        const btn = menuItem.querySelector('.btn');
+        let badge = menuItem.querySelector('.stok-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'stok-badge';
+          menuItem.querySelector('.item-details').prepend(badge);
+        }
+        if (stokObj && stokObj.stok === 0) {
+          badge.textContent = 'Habis';
+          badge.style.background = '#ff5252';
+          badge.style.color = '#fff';
+          badge.style.marginRight = '10px';
+          badge.style.padding = '2px 10px';
+          badge.style.borderRadius = '8px';
+          badge.style.fontSize = '0.9rem';
+          btn.disabled = true;
+          btn.classList.add('btn-disabled');
+          btn.textContent = 'Habis';
+        } else if (stokObj && stokObj.stok <= 3) {
+          badge.textContent = 'Hampir Habis';
+          badge.style.background = '#FFA630';
+          badge.style.color = '#fff';
+          badge.style.marginRight = '10px';
+          badge.style.padding = '2px 10px';
+          badge.style.borderRadius = '8px';
+          badge.style.fontSize = '0.9rem';
+          btn.disabled = false;
+          btn.classList.remove('btn-disabled');
+          btn.textContent = 'Pesan';
+        } else {
+          badge.textContent = '';
+          btn.disabled = false;
+          btn.classList.remove('btn-disabled');
+          btn.textContent = 'Pesan';
+        }
+      });
+    }
+    updateStokMenuUI();
 });
