@@ -370,9 +370,23 @@ document.addEventListener('click', function(event) {
     if (cateringForm) {
         const totalInput = document.getElementById('catering-total');
         const estimasiInput = document.getElementById('catering-estimasi');
-        const hargaRata = 22000; // Bisa diubah sesuai kebutuhan
+        // Ambil semua harga menu dari halaman
+        function getAverageMenuPrice() {
+            const priceEls = document.querySelectorAll('.menu-item .price');
+            let total = 0;
+            let count = 0;
+            priceEls.forEach(el => {
+                const price = parseInt(el.textContent.replace(/\D/g, ''));
+                if (!isNaN(price)) {
+                    total += price;
+                    count++;
+                }
+            });
+            return count > 0 ? Math.round(total / count) : 22000;
+        }
         totalInput.addEventListener('input', function() {
             const total = parseInt(this.value) || 0;
+            const hargaRata = getAverageMenuPrice();
             if (total >= 10) {
                 estimasiInput.value = (total * hargaRata).toLocaleString('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0});
             } else {
