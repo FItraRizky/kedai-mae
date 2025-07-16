@@ -1659,6 +1659,24 @@ section {
   background: #fff;
 }
 
+/* Tombol dark mode hanya di hamburger (mobile) */
+.theme-switcher-mobile {
+  display: none;
+}
+@media (max-width: 768px) {
+  .theme-switcher-mobile {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+  }
+  .theme-switcher-mobile #theme-toggle-btn {
+    width: 100%;
+    font-size: 1.5rem;
+    margin: 0 auto;
+    display: block;
+  }
+}
+
 /* SMOOTH TRANSITION IMPROVEMENT */
 #header, .navbar, .logo, .logo-img, .theme-switcher, .nav-links, .nav-links a, .btn, .btn-outline, .menu-item, .menu-tabs, .tab-btn, section, .footer, .cart, .order-form {
   transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.35s, color 0.35s, border 0.35s;
