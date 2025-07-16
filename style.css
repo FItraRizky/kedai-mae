@@ -1313,32 +1313,45 @@ section {
     .hamburger {
         display: block;
     }
-    
+    .navbar {
+        position: relative;
+        z-index: 1100;
+    }
+    .logo {
+        position: relative;
+        z-index: 1101;
+        display: flex;
+        align-items: center;
+        background: transparent;
+    }
     .nav-links {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 80%;
-    height: 100vh;
-    background-color: var(--background-color);
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: right 0.3s ease; /* Pastikan hanya transisi right */
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-}
-    
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        height: 100vh;
+        background-color: var(--background-color);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: right 0.3s ease;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        /* Tambahan agar tidak menutupi logo */
+        left: auto;
+    }
     .nav-links.active {
         right: 0 !important;
     }
-    
     .nav-links li {
         margin: 15px 0;
     }
-    
     .theme-switcher {
         margin: 0 15px;
+    }
+    /* Pastikan logo tetap di atas nav-links */
+    .logo-img {
+        z-index: 1102;
     }
     
     .hero-content h1 {
@@ -1515,14 +1528,17 @@ section {
   pointer-events: auto;
   transform: translateX(-50%) scale(1);
 }
-.toast-notif.success {
-  background: #2ecc40;
-}
 .toast-notif.error {
-  background: #ff5252;
+    background: #ff5252;
+    color: #fff;
+}
+.toast-notif.success {
+    background: #2ecc40;
+    color: #fff;
 }
 .toast-notif.info {
-  background: #FFA630;
+    background: #FFA630;
+    color: #fff;
 }
 
 @keyframes fadeInUpSmooth {
@@ -1774,3 +1790,17 @@ body, section, .footer, .cart, .order-form, .menu-item, .about-img img, .contact
   }
 }
 /* END DARK MODE IMPROVEMENT */
+
+/* Cek dan rapikan duplikasi selector, pastikan tidak ada error sintaks, dan tambahkan fallback/responsivitas jika ada yang kurang. */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 8px;
+  }
+  .section-title {
+    font-size: 1.3rem;
+  }
+  .footer-content {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

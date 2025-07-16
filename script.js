@@ -63,7 +63,7 @@ if (window.AOS) {
 } else {
   const script = document.createElement('script');
   script.src = 'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js';
-  script.onload = function() { AOS.init(); };
+  script.onload = function() { if (window.AOS) AOS.init(); };
   document.body.appendChild(script);
 }
 
@@ -77,41 +77,52 @@ document.addEventListener('DOMContentLoaded', function() {
       // Reset error
       cateringForm.querySelectorAll('.form-error').forEach(el => el.textContent = '');
       // Nama
-      const name = document.getElementById('catering-name').value.trim();
+      const nameEl = document.getElementById('catering-name');
+      const name = nameEl ? nameEl.value.trim() : '';
       if (!name) {
-        document.querySelector('#group-catering-name .form-error').textContent = 'Nama wajib diisi.';
+        const err = document.querySelector('#group-catering-name .form-error');
+        if (err) err.textContent = 'Nama wajib diisi.';
         valid = false;
       }
       // Telepon
-      const phone = document.getElementById('catering-phone').value.trim();
+      const phoneEl = document.getElementById('catering-phone');
+      const phone = phoneEl ? phoneEl.value.trim() : '';
       if (!/^0[0-9]{9,}$/.test(phone) && !/^62[0-9]{9,}$/.test(phone)) {
-        document.querySelector('#group-catering-phone .form-error').textContent = 'Nomor telepon tidak valid.';
+        const err = document.querySelector('#group-catering-phone .form-error');
+        if (err) err.textContent = 'Nomor telepon tidak valid.';
         valid = false;
       }
       // Tanggal
-      const date = document.getElementById('catering-date').value;
+      const dateEl = document.getElementById('catering-date');
+      const date = dateEl ? dateEl.value : '';
       if (!date) {
-        document.querySelector('#group-catering-date .form-error').textContent = 'Tanggal wajib diisi.';
+        const err = document.querySelector('#group-catering-date .form-error');
+        if (err) err.textContent = 'Tanggal wajib diisi.';
         valid = false;
       } else {
         const today = new Date();
         const inputDate = new Date(date);
         today.setHours(0,0,0,0);
         if (inputDate < today) {
-          document.querySelector('#group-catering-date .form-error').textContent = 'Tanggal tidak boleh lampau.';
+          const err = document.querySelector('#group-catering-date .form-error');
+          if (err) err.textContent = 'Tanggal tidak boleh lampau.';
           valid = false;
         }
       }
       // Menu
-      const menu = document.getElementById('catering-menu').value.trim();
+      const menuEl = document.getElementById('catering-menu');
+      const menu = menuEl ? menuEl.value.trim() : '';
       if (!menu) {
-        document.querySelector('#group-catering-menu .form-error').textContent = 'Menu pilihan wajib diisi.';
+        const err = document.querySelector('#group-catering-menu .form-error');
+        if (err) err.textContent = 'Menu pilihan wajib diisi.';
         valid = false;
       }
       // Total porsi
-      const total = parseInt(document.getElementById('catering-total').value);
+      const totalEl = document.getElementById('catering-total');
+      const total = totalEl ? parseInt(totalEl.value) : NaN;
       if (isNaN(total) || total < 10) {
-        document.querySelector('#group-catering-total .form-error').textContent = 'Minimal 10 porsi.';
+        const err = document.querySelector('#group-catering-total .form-error');
+        if (err) err.textContent = 'Minimal 10 porsi.';
         valid = false;
       }
       if (!valid) return;
@@ -127,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Rata-rata harga per porsi (bisa disesuaikan)
   const AVG_PRICE = 20000;
   function updateEstimasiHarga() {
-    let total = parseInt(totalInput?.value) || 0;
+    let total = totalInput ? parseInt(totalInput.value) : 0;
     if (total < 10) total = 0;
     // Bisa tambahkan parsing menuInput untuk deteksi jumlah porsi per menu
     let estimasi = total * AVG_PRICE;
@@ -137,9 +148,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   if (totalInput && estimasiInput) {
     totalInput.addEventListener('input', updateEstimasiHarga);
-    menuInput?.addEventListener('input', updateEstimasiHarga);
-    cateringForm?.addEventListener('reset', function() {
-      setTimeout(() => { estimasiInput.value = ''; }, 50);
+    if (menuInput) menuInput.addEventListener('input', updateEstimasiHarga);
+    if (cateringForm) cateringForm.addEventListener('reset', function() {
+      setTimeout(() => { if (estimasiInput) estimasiInput.value = ''; }, 50);
     });
   }
 });
@@ -153,7 +164,7 @@ function showToast(message, type = 'info') {
   setTimeout(() => { toast.classList.add('show'); }, 10);
   setTimeout(() => {
     toast.classList.remove('show');
-    setTimeout(() => { document.body.removeChild(toast); }, 300);
+    setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
   }, 3500);
 }
 
@@ -248,21 +259,12 @@ function enableMenuSearch() {
   if (!searchInput) return;
   searchInput.addEventListener('input', function() {
     const keyword = this.value.trim().toLowerCase();
-    document.querySelectorAll('.menu-category').forEach(catDiv => {
-      let hasVisible = false;
-      catDiv.querySelectorAll('.menu-item').forEach(item => {
-        const name = item.querySelector('h3')?.textContent?.toLowerCase() || '';
-        const desc = item.querySelector('p')?.textContent?.toLowerCase() || '';
-        if (name.includes(keyword) || desc.includes(keyword)) {
-          item.style.display = '';
-          hasVisible = true;
-        } else {
-          item.style.display = 'none';
-        }
-      });
-      // Sembunyikan kategori jika tidak ada item yang cocok
-      if (catDiv.classList.contains('active')) {
-        catDiv.style.display = hasVisible ? 'grid' : 'none';
+    document.querySelectorAll('.menu-item').forEach(item => {
+      const name = item.querySelector('h3') ? item.querySelector('h3').textContent.toLowerCase() : '';
+      if (name.includes(keyword)) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
       }
     });
   });
@@ -317,9 +319,9 @@ function renderMenuKategori(kategoriId, kategoriNama, data) {
   const kategori = document.querySelector('.menu-category#' + kategoriId);
   if (!kategori) return;
   kategori.innerHTML = '';
-  data.filter(item => item.kategori === kategoriNama).forEach((item, i) => {
-    // Gunakan id yang konsisten dengan cart.js
-    const itemId = kategoriNama + '-' + i;
+  data.filter(item => item.kategori === kategoriNama).forEach((item) => {
+    // Use a more consistent ID format
+    const itemId = item.nama.toLowerCase().replace(/\s+/g, '-');
     const article = document.createElement('article');
     article.className = 'menu-item';
     article.setAttribute('data-id', itemId);
@@ -333,31 +335,11 @@ function renderMenuKategori(kategoriId, kategoriNama, data) {
         <p>Stok: <span class="stok-badge">${item.stok}</span></p>
         <footer class="item-footer">
           <span class="price">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</span>
-          <button class="btn add-to-cart" data-idx="${i}" data-kat="${kategoriNama}" ${item.stok < 1 ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>${item.stok < 1 ? 'Habis' : 'Pesan'}</button>
+          <button class="btn add-to-cart" data-id="${itemId}" ${item.stok < 1 ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>${item.stok < 1 ? 'Habis' : 'Pesan'}</button>
         </footer>
       </div>
     `;
     kategori.appendChild(article);
-  });
-  // Tambahkan event listener untuk tombol pesan
-  kategori.querySelectorAll('.add-to-cart').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const idx = parseInt(this.getAttribute('data-idx'));
-      const kat = this.getAttribute('data-kat');
-      // Ambil data stok terbaru dari Firebase, bukan localStorage
-      db.ref('stokMakanan').once('value', function(snap) {
-        const stokData = snap.val() || [];
-        const filtered = stokData.filter(item => item.kategori === kat);
-        const item = filtered[idx];
-        const realIdx = stokData.findIndex(x => x.nama === item.nama && x.kategori === kat);
-        if (stokData[realIdx] && stokData[realIdx].stok > 0) {
-          stokData[realIdx].stok -= 1;
-          db.ref('stokMakanan').set(stokData).then(() => {
-            renderAllMenuFromFirebase();
-          });
-        }
-      });
-    });
   });
 }
 function renderAllMenuFromFirebase() {

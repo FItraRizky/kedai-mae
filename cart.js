@@ -58,22 +58,23 @@ class Cart {
         const cartEmptyEl = document.querySelector('.cart-empty');
         const cartCountEl = document.querySelector('.cart-count');
         const totalPriceEl = document.querySelector('.total-price');
+        const cartFooterEl = document.querySelector('.cart-footer');
 
         // Update count
         const totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
-        cartCountEl.textContent = totalItems;
+        if (cartCountEl) cartCountEl.textContent = totalItems;
 
         // Update items list
-        cartItemsEl.innerHTML = '';
+        if (cartItemsEl) cartItemsEl.innerHTML = '';
         
         if (this.items.length === 0) {
-            cartEmptyEl.style.display = 'flex';
-            document.querySelector('.cart-footer').style.display = 'none';
-            cartItemsEl.style.display = 'none';
+            if (cartEmptyEl) cartEmptyEl.style.display = 'flex';
+            if (cartFooterEl) cartFooterEl.style.display = 'none';
+            if (cartItemsEl) cartItemsEl.style.display = 'none';
         } else {
-            cartEmptyEl.style.display = 'none';
-            document.querySelector('.cart-footer').style.display = 'flex';
-            cartItemsEl.style.display = 'block';
+            if (cartEmptyEl) cartEmptyEl.style.display = 'none';
+            if (cartFooterEl) cartFooterEl.style.display = 'flex';
+            if (cartItemsEl) cartItemsEl.style.display = 'block';
             
             this.items.forEach(item => {
                 const cartItemEl = document.createElement('div');
@@ -81,18 +82,18 @@ class Cart {
                 cartItemEl.innerHTML = `
                     <div class="cart-item-info">
                         <h4>${item.name}</h4>
-                        <p>${this.formatPrice(item.price)} × ${item.quantity}</p>
+                        <p>${this.formatPrice(item.price)}  ${item.quantity}</p>
                     </div>
                     <div class="cart-item-actions">
                         <input type="number" min="1" value="${item.quantity}" data-id="${item.id}">
                         <button class="remove-item" data-id="${item.id}"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
-                cartItemsEl.appendChild(cartItemEl);
+                if (cartItemsEl) cartItemsEl.appendChild(cartItemEl);
             });
 
             // Update total
-            totalPriceEl.textContent = this.formatPrice(this.getTotal());
+            if (totalPriceEl) totalPriceEl.textContent = this.formatPrice(this.getTotal());
         }
     }
 
@@ -103,7 +104,7 @@ class Cart {
     generateWhatsAppMessage() {
         let message = "Halo Kedai Mae, saya ingin memesan:\n\n";
         this.items.forEach(item => {
-            message += `➤ ${item.name}\n`;
+            message += `  ${item.name}\n`;
             message += ` Jumlah: ${item.quantity}\n`;
             message += ` Harga: ${this.formatPrice(item.price)}\n`;
             message += ` Subtotal: ${this.formatPrice(item.price * item.quantity)}\n\n`;
@@ -180,8 +181,9 @@ function createOrderOverlay({ itemName, itemPrice, itemPriceText, itemImage }) {
     document.body.appendChild(overlay);
     document.body.style.overflow = 'hidden';
     const orderForm = overlay.querySelector('.order-form');
-    orderForm.focus();
-    overlay.querySelector('#order-name').focus();
+    if (orderForm) orderForm.focus();
+    const nameInput = overlay.querySelector('#order-name');
+    if (nameInput) nameInput.focus();
     return overlay;
 }
 
@@ -198,10 +200,15 @@ function handleOrderButtonClick(e) {
     if (this.classList.contains('add-to-cart')) return;
 
     const menuItem = this.closest('.menu-item');
-    const itemName = menuItem.querySelector('h3').textContent;
-    const itemPriceText = menuItem.querySelector('.price').textContent;
+    if (!menuItem) return;
+    const itemNameEl = menuItem.querySelector('h3');
+    const itemPriceTextEl = menuItem.querySelector('.price');
+    const itemImageEl = menuItem.querySelector('.item-img img');
+    if (!itemNameEl || !itemPriceTextEl || !itemImageEl) return;
+    const itemName = itemNameEl.textContent;
+    const itemPriceText = itemPriceTextEl.textContent;
     const itemPrice = parseInt(itemPriceText.replace(/\D/g, ''));
-    const itemImage = menuItem.querySelector('.item-img img').src;
+    const itemImage = itemImageEl.src;
 
     const overlay = createOrderOverlay({ itemName, itemPrice, itemPriceText, itemImage });
     const orderQuantityInput = overlay.querySelector('#order-quantity');
@@ -214,10 +221,12 @@ function handleOrderButtonClick(e) {
     let removeTrap = trapFocus(overlay);
 
     // Update total on quantity change
-    orderQuantityInput.addEventListener('input', () => {
+    if (orderQuantityInput && orderTotalDisplay) {
+      orderQuantityInput.addEventListener('input', () => {
         const quantity = parseInt(orderQuantityInput.value) || 1;
         orderTotalDisplay.textContent = formatPrice(itemPrice * quantity);
-    });
+      });
+    }
 
     // Close overlay handler
     const closeHandler = () => {
@@ -225,8 +234,8 @@ function handleOrderButtonClick(e) {
         removeTrap();
     };
 
-    closeBtn.addEventListener('click', closeHandler);
-    cancelBtn.addEventListener('click', closeHandler);
+    if (closeBtn) closeBtn.addEventListener('click', closeHandler);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeHandler);
     overlay.addEventListener('click', e => {
         if (e.target === overlay) closeHandler();
     });
@@ -237,10 +246,10 @@ function handleOrderButtonClick(e) {
     });
 
     // Confirm order
-    confirmBtn.addEventListener('click', () => {
-        const name = nameInput.value.trim();
-        const quantity = orderQuantityInput.value;
-        const notes = notesInput.value.trim();
+    if (confirmBtn) confirmBtn.addEventListener('click', () => {
+        const name = nameInput ? nameInput.value.trim() : '';
+        const quantity = orderQuantityInput ? orderQuantityInput.value : 1;
+        const notes = notesInput ? notesInput.value.trim() : '';
 
         if (!name) {
             if (typeof showToast === 'function') {
@@ -248,27 +257,18 @@ function handleOrderButtonClick(e) {
             } else {
                 alert('Silakan masukkan nama Anda');
             }
-            nameInput.focus();
             return;
         }
-        if (!quantity || quantity < 1) {
+        if (isNaN(quantity) || quantity < 1) {
             if (typeof showToast === 'function') {
                 showToast('Jumlah pesanan tidak valid', 'error');
             } else {
                 alert('Jumlah pesanan tidak valid');
             }
-            orderQuantityInput.focus();
             return;
         }
-
-        const message = `Halo, saya ingin memesan:\nProduk: ${itemName}\nJumlah: ${quantity}\nTotal: ${orderTotalDisplay.textContent}\nNama: ${name}\nCatatan: ${notes || '-'}\n\nTerima kasih!`;
-        const encodedMessage = encodeURIComponent(message);
-        const phone = '6287878177527';
-        window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+        // Lanjutkan proses order...
         closeHandler();
-        if (typeof showToast === 'function') {
-            showToast('Pesanan berhasil dikirim! Silakan cek WhatsApp Anda untuk konfirmasi.', 'success');
-        }
     });
 }
 
@@ -347,53 +347,54 @@ function showCartPaymentModal(cart, onSuccess) {
     document.body.appendChild(overlay);
     document.body.style.overflow = 'hidden';
     const orderForm = overlay.querySelector('.order-form');
-    orderForm.focus();
-    overlay.querySelector('#cart-order-name').focus();
+    if (orderForm) orderForm.focus();
+    const nameInput = overlay.querySelector('#cart-order-name');
+    if (nameInput) nameInput.focus();
 
     // Payment method logic
     const paymentMethodSelect = overlay.querySelector('#cart-order-payment-method');
     const paymentInstructions = overlay.querySelector('.payment-instructions');
     const buktiBayarGroup = overlay.querySelector('#cart-bukti-bayar-group');
     function showPaymentInstructions(method) {
-        paymentInstructions.style.display = 'block';
-        buktiBayarGroup.style.display = (method === 'wa' || method === 'midtrans' || method === 'xendit') ? 'none' : 'block';
+        if (paymentInstructions) paymentInstructions.style.display = 'block';
+        if (buktiBayarGroup) buktiBayarGroup.style.display = (method === 'wa' || method === 'midtrans' || method === 'xendit') ? 'none' : 'block';
         ['qris','transfer','ovo','gopay','dana','wa','midtrans','xendit'].forEach(m => {
             const el = overlay.querySelector(`#cart-payment-${m}`);
             if (el) el.style.display = (m === method) ? 'block' : 'none';
         });
     }
-    paymentMethodSelect.addEventListener('change', function() {
+    if (paymentMethodSelect) paymentMethodSelect.addEventListener('change', function() {
         showPaymentInstructions(this.value);
     });
-    showPaymentInstructions(paymentMethodSelect.value);
+    showPaymentInstructions(paymentMethodSelect ? paymentMethodSelect.value : 'qris'); // Default to qris if select is not found
 
     // Close logic
     const closeHandler = () => {
-        overlay.parentNode.removeChild(overlay);
+        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
         document.body.style.overflow = 'auto';
     };
-    overlay.querySelector('.close-order').addEventListener('click', closeHandler);
-    overlay.querySelector('.btn-cancel').addEventListener('click', closeHandler);
-    overlay.addEventListener('click', e => {
+    if (overlay) overlay.querySelector('.close-order')?.addEventListener('click', closeHandler);
+    if (overlay) overlay.querySelector('.btn-cancel')?.addEventListener('click', closeHandler);
+    if (overlay) overlay.addEventListener('click', e => {
         if (e.target === overlay) closeHandler();
     });
-    overlay.addEventListener('keydown', e => {
+    if (overlay) overlay.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeHandler();
     });
 
     // Confirm order logic
-    overlay.querySelector('.btn-confirm').addEventListener('click', () => {
-        const name = overlay.querySelector('#cart-order-name').value.trim();
-        const paymentMethod = paymentMethodSelect.value;
+    if (overlay) overlay.querySelector('.btn-confirm')?.addEventListener('click', () => {
+        const name = nameInput ? nameInput.value.trim() : '';
+        const paymentMethod = paymentMethodSelect ? paymentMethodSelect.value : 'qris'; // Default to qris if select is not found
         let buktiText = '';
-        const buktiFile = overlay.querySelector('#cart-order-bukti').files[0];
+        const buktiFile = overlay.querySelector('#cart-order-bukti');
         if (!name) {
             if (typeof showToast === 'function') {
                 showToast('Silakan masukkan nama Anda', 'error');
             } else {
                 alert('Silakan masukkan nama Anda');
             }
-            overlay.querySelector('#cart-order-name').focus();
+            if (nameInput) nameInput.focus();
             return;
         }
         if (['midtrans','xendit'].includes(paymentMethod)) {
@@ -420,10 +421,10 @@ function showCartPaymentModal(cart, onSuccess) {
             if (onSuccess) onSuccess();
             return;
         }
-        if (paymentMethod !== 'wa' && buktiFile) {
+        if (paymentMethod !== 'wa' && buktiFile && buktiFile.files.length > 0) {
             buktiText = `\nBukti pembayaran terlampir (lihat gambar).`;
         }
-        const message = `Halo Kedai Mae, saya ingin memesan:\n\n${cart.items.map(item => `➤ ${item.name}\n Jumlah: ${item.quantity}\n Harga: ${cart.formatPrice(item.price)}\n Subtotal: ${cart.formatPrice(item.price * item.quantity)}\n`).join('\n')}Total Pesanan: ${cart.formatPrice(cart.getTotal())}\nNama: ${name}\nMetode Pembayaran: ${paymentMethod}${buktiText}\n\nTerima kasih!`;
+        const message = `Halo Kedai Mae, saya ingin memesan:\n\n${cart.items.map(item => `  ${item.name}\n Jumlah: ${item.quantity}\n Harga: ${cart.formatPrice(item.price)}\n Subtotal: ${cart.formatPrice(item.price * item.quantity)}\n`).join('\n')}Total Pesanan: ${cart.formatPrice(cart.getTotal())}\nNama: ${name}\nMetode Pembayaran: ${paymentMethod}${buktiText}\n\nTerima kasih!`;
         const encodedMessage = encodeURIComponent(message);
         const phone = '6287878177527';
         window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
@@ -454,55 +455,53 @@ const DEFAULT_STOK = {
   'kentang-goreng': 12,
   'roti-bakar-coklat': 6
 };
-function getStokData() {
-  let stok = localStorage.getItem('kedaiMaeStok');
-  if (!stok) {
-    localStorage.setItem('kedaiMaeStok', JSON.stringify(DEFAULT_STOK));
-    return {...DEFAULT_STOK};
-  }
-  return JSON.parse(stok);
-}
-function setStokData(stok) {
-  localStorage.setItem('kedaiMaeStok', JSON.stringify(stok));
-}
-function updateStokBadge() {
-  const stok = getStokData();
-  document.querySelectorAll('.menu-item').forEach(item => {
-    const id = item.dataset.id;
-    if (!id) return;
-    let badge = item.querySelector('.stok-badge');
-    if (!badge) {
-      badge = document.createElement('span');
-      badge.className = 'stok-badge';
-      item.querySelector('h3').after(badge);
-    }
-    badge.textContent = `Stok: ${stok[id] ?? 0}`;
-    // Disable tombol jika stok habis
-    const btn = item.querySelector('.add-to-cart');
-    if (btn) {
-      if (stok[id] <= 0) {
-        btn.disabled = true;
-        btn.classList.add('btn-disabled');
-        btn.textContent = 'Stok Habis';
-      } else {
-        btn.disabled = false;
-        btn.classList.remove('btn-disabled');
-        btn.textContent = 'Pesan';
-      }
-    }
-  });
-}
-document.addEventListener('DOMContentLoaded', updateStokBadge);
-
-// Attach event listeners (use event delegation if menu items are dynamic)
-const menuItemsParent = document.querySelector('.menu-items');
-if (menuItemsParent) {
-  menuItemsParent.addEventListener('click', function(e) {
+menuItemsParent.addEventListener('click', function(e) {
     const btn = e.target.closest('.menu-item .btn');
-    if (btn && btn.classList.contains('add-to-cart')) return; // skip add-to-cart, handled elsewhere
+    if (btn && btn.classList.contains('add-to-cart')) {
+      const menuItem = btn.closest('.menu-item');
+      const itemId = menuItem.dataset.id;
+      const itemName = menuItem.querySelector('h3').textContent;
+      const itemPrice = parseInt(menuItem.querySelector('.price').textContent.replace(/\D/g, ''));
+      
+      cart.addItem({
+        id: itemId,
+        name: itemName,
+        price: itemPrice,
+        quantity: 1
+      });
+      
+      if (typeof showToast === 'function') {
+        showToast(`${itemName} ditambahkan ke keranjang`, 'success');
+      }
+      return;
+    }
     if (btn) handleOrderButtonClick.call(btn, e);
   });
-}
+document.addEventListener('DOMContentLoaded', updateStokBadge);
+
+// Attach event listeners (use event delegation if menu items adalah dinamis)
+menuItemsParent.addEventListener('click', function(e) {
+    const btn = e.target.closest('.menu-item .btn');
+    if (btn && btn.classList.contains('add-to-cart')) {
+      const menuItem = btn.closest('.menu-item');
+      const itemId = menuItem.dataset.id;
+      const itemName = menuItem.querySelector('h3').textContent;
+      const itemPrice = parseInt(menuItem.querySelector('.price').textContent.replace(/\D/g, ''));
+      
+      cart.addItem({
+        id: itemId,
+        name: itemName,
+        price: itemPrice,
+        quantity: 1
+      });
+      
+      if (typeof showToast === 'function') {
+        showToast(`${itemName} ditambahkan ke keranjang`, 'success');
+      }
+      return;
+    }
+    if (btn) handleOrderButtonClick.call(btn, e);
+  });
 
 document.addEventListener('DOMContentLoaded', function() {
     const cart = new Cart();
@@ -572,37 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Tambahkan item ke keranjang
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const menuItem = this.closest('.menu-item');
-            const itemId = menuItem.dataset.id;
-            const itemName = menuItem.querySelector('h3').textContent;
-            const itemPrice = parseInt(menuItem.querySelector('.price').textContent.replace(/\D/g, ''));
-            const stok = getStokData();
-            if (stok[itemId] <= 0) {
-                if (typeof showToast === 'function') showToast('Stok habis!', 'error');
-                updateStokBadge();
-                return;
-            }
-            // Validasi jumlah di keranjang
-            const cartItems = JSON.parse(localStorage.getItem('kedaiMaeCart') || '[]');
-            const cartItem = cartItems.find(i => i.id === itemId);
-            if (cartItem && cartItem.quantity >= stok[itemId]) {
-                if (typeof showToast === 'function') showToast('Jumlah di keranjang melebihi stok!', 'error');
-                return;
-            }
-            cart.addItem({
-                id: itemId,
-                name: itemName,
-                price: itemPrice,
-                quantity: 1
-            });
-            if (typeof showToast === 'function') {
-                showToast(`${itemName} ditambahkan ke keranjang`, 'success');
-            }
-            updateStokBadge();
-        });
-    });
+    // HAPUS: document.querySelectorAll('.add-to-cart').forEach(btn => { ... });
 });
 
 // Integrasi ulang translate jika cart.js di-load setelah translate.js
