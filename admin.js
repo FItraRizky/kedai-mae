@@ -41,6 +41,23 @@ function renderTabel() {
     });
   });
 }
+function renderMenuPreview() {
+  getStok(function(data) {
+    const tbody = document.querySelector('#tabel-menu-preview tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    data.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.nama}</td>
+        <td>Rp ${parseInt(item.harga).toLocaleString('id-ID')}</td>
+        <td>${item.stok}</td>
+        <td>${item.kategori ? item.kategori.charAt(0).toUpperCase() + item.kategori.slice(1) : '-'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+}
 window.editStok = function(idx) {
   getStok(function(data) {
     const item = data[idx];
@@ -86,8 +103,10 @@ document.getElementById('form-stok').onsubmit = function(e) {
 // Realtime update tabel admin jika ada perubahan dari device lain
 db.ref('stokMakanan').on('value', function() {
   renderTabel();
+  renderMenuPreview();
 });
 renderTabel();
+renderMenuPreview();
   
   
  
