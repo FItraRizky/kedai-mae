@@ -495,9 +495,14 @@ function updateStokBadge() {
 document.addEventListener('DOMContentLoaded', updateStokBadge);
 
 // Attach event listeners (use event delegation if menu items are dynamic)
-document.querySelectorAll('.menu-item .btn').forEach(button => {
-    button.addEventListener('click', handleOrderButtonClick);
-});
+const menuItemsParent = document.querySelector('.menu-items');
+if (menuItemsParent) {
+  menuItemsParent.addEventListener('click', function(e) {
+    const btn = e.target.closest('.menu-item .btn');
+    if (btn && btn.classList.contains('add-to-cart')) return; // skip add-to-cart, handled elsewhere
+    if (btn) handleOrderButtonClick.call(btn, e);
+  });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const cart = new Cart();

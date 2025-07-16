@@ -16,28 +16,30 @@ const db = firebase.database();
 const auth = firebase.auth();
 
 // Login
-document.getElementById('login-btn').onclick = function() {
-  const email = document.getElementById('login-email').value;
-  const pass = document.getElementById('login-password').value;
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(err => {
-      document.getElementById('login-error').textContent = err.message;
-    });
-};
-
+if (document.getElementById('login-btn')) {
+  document.getElementById('login-btn').onclick = function() {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-password').value;
+    auth.signInWithEmailAndPassword(email, pass)
+      .catch(err => {
+        document.getElementById('login-error').textContent = err.message;
+      });
+  };
+}
 // Logout
-document.getElementById('logout-btn').onclick = function() {
-  auth.signOut();
-};
-
+if (document.getElementById('logout-btn')) {
+  document.getElementById('logout-btn').onclick = function() {
+    auth.signOut();
+  };
+}
 // Tampilkan/hidden form sesuai status login
 auth.onAuthStateChanged(function(user) {
   const isLoggedIn = !!user;
-  document.getElementById('login-section').style.display = isLoggedIn ? 'none' : '';
-  document.getElementById('logout-btn').style.display = isLoggedIn ? '' : 'none';
-  document.querySelector('.admin-form').style.display = isLoggedIn ? '' : 'none';
-  document.getElementById('tabel-stok').style.display = isLoggedIn ? '' : 'none';
-  document.getElementById('tabel-menu-preview').parentElement.style.display = isLoggedIn ? '' : 'none';
+  if(document.getElementById('login-section')) document.getElementById('login-section').style.display = isLoggedIn ? 'none' : '';
+  if(document.getElementById('logout-btn')) document.getElementById('logout-btn').style.display = isLoggedIn ? '' : 'none';
+  if(document.querySelector('.admin-form')) document.querySelector('.admin-form').style.display = isLoggedIn ? '' : 'none';
+  if(document.getElementById('tabel-stok')) document.getElementById('tabel-stok').style.display = isLoggedIn ? '' : 'none';
+  if(document.getElementById('tabel-menu-preview')) document.getElementById('tabel-menu-preview').parentElement.style.display = isLoggedIn ? '' : 'none';
 });
 
 // CRUD dan realtime

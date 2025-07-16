@@ -318,9 +318,11 @@ function renderMenuKategori(kategoriId, kategoriNama, data) {
   if (!kategori) return;
   kategori.innerHTML = '';
   data.filter(item => item.kategori === kategoriNama).forEach((item, i) => {
+    // Gunakan id yang konsisten dengan cart.js
+    const itemId = kategoriNama + '-' + i;
     const article = document.createElement('article');
     article.className = 'menu-item';
-    article.setAttribute('data-id', kategoriNama + '-' + i);
+    article.setAttribute('data-id', itemId);
     article.innerHTML = `
       <figure class="item-img">
         <img src="https://source.unsplash.com/400x300/?food,${encodeURIComponent(item.nama)}" alt="${item.nama}" loading="lazy">
