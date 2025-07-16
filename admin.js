@@ -1,16 +1,18 @@
-// Ganti dengan config dari Firebase Console Anda
+// Konfigurasi Firebase
 const firebaseConfig = {
-  apiKey: "API_KEY_ANDA",
-  authDomain: "PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://kedai-mae-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "PROJECT_ID",
-  storageBucket: "PROJECT_ID.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyBCpivifQQX0KSlVX-nKKDqrLDQRpBcHfY",
+  authDomain: "kedai-mae.firebaseapp.com",
+  databaseURL: "https://kedai-mae-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "kedai-mae",
+  storageBucket: "kedai-mae.appspot.com",
+  messagingSenderId: "293737028509",
+  appId: "1:293737028509:web:bc7c55d5d62dce63496d74",
+  measurementId: "G-WQXWBEKCV7"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-// Data stok makanan di Firebase
+
+// CRUD dan realtime
 function getStok(callback) {
   db.ref('stokMakanan').once('value', snap => {
     callback(snap.val() || []);
@@ -82,7 +84,10 @@ document.getElementById('form-stok').onsubmit = function(e) {
   });
 };
 // Realtime update tabel admin jika ada perubahan dari device lain
-firebase.database().ref('stokMakanan').on('value', function() {
+db.ref('stokMakanan').on('value', function() {
   renderTabel();
 });
-renderTabel(); 
+renderTabel();
+  
+  
+ 
