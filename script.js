@@ -294,4 +294,62 @@ function enableCateringParallax() {
 }
 document.addEventListener('DOMContentLoaded', function() {
   enableCateringParallax();
+});
+
+// RENDER MENU MAKANAN DARI LOCALSTORAGE ADMIN
+function renderMenuKategori(kategoriId, kategoriNama) {
+  const data = JSON.parse(localStorage.getItem('stokMakanan') || '[]');
+  const kategori = document.querySelector('.menu-category#' + kategoriId);
+  if (!kategori) return;
+  kategori.innerHTML = '';
+  data.filter(item => item.kategori === kategoriNama).forEach((item, i) => {
+    const article = document.createElement('article');
+    article.className = 'menu-item';
+    article.setAttribute('data-id', kategoriNama + '-' + i);
+    article.innerHTML = `
+      <figure class="item-img">
+        <img src="https://source.unsplash.com/400x300/?food,${encodeURIComponent(item.nama)}" alt="${item.nama}" loading="lazy">
+        <figcaption>${item.nama}</figcaption>
+      </figure>
+      <div class="item-details">
+        <h3>${item.nama}</h3>
+        <p>Stok: <span class="stok-badge">${item.stok}</span></p>
+        <footer class="item-footer">
+          <span class="price">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</span>
+          <button class="btn add-to-cart" data-idx="${i}" data-kat="${kategoriNama}" ${item.stok < 1 ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>${item.stok < 1 ? 'Habis' : 'Pesan'}</button>
+        </footer>
+      </div>
+    `;
+    kategori.appendChild(article);
+  });
+  // Tambahkan event listener untuk tombol pesan
+  kategori.querySelectorAll('.add-to-cart').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const idx = parseInt(this.getAttribute('data-idx'));
+      const kat = this.getAttribute('data-kat');
+      const stokData = JSON.parse(localStorage.getItem('stokMakanan') || '[]');
+      // Cari index asli di data stok berdasarkan kategori dan urutan
+      const filtered = stokData.filter(item => item.kategori === kat);
+      const item = filtered[idx];
+      const realIdx = stokData.findIndex(x => x.nama === item.nama && x.kategori === kat);
+      if (stokData[realIdx] && stokData[realIdx].stok > 0) {
+        stokData[realIdx].stok -= 1;
+        localStorage.setItem('stokMakanan', JSON.stringify(stokData));
+        renderAllMenu();
+      }
+    });
+  });
+}
+function renderAllMenu() {
+  renderMenuKategori('makanan', 'makanan');
+  renderMenuKategori('minuman', 'minuman');
+  renderMenuKategori('snack', 'snack');
+}
+document.addEventListener('DOMContentLoaded', function() {
+  renderAllMenu();
+});
+window.addEventListener('storage', function(e) {
+  if (e.key === 'stokMakanan') {
+    renderAllMenu();
+  }
 }); 

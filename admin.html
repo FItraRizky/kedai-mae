@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Stok Makanan</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #fffbe9; }
+    .admin-container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 32px 24px; }
+    .admin-title { text-align:center; font-size:2rem; margin-bottom:24px; color:#FFA630; }
+    .admin-form { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+    .admin-form input { flex:1 1 120px; padding:8px 12px; border-radius:6px; border:1.5px solid #FFA630; }
+    .admin-form button { padding:8px 18px; border-radius:6px; background:#FFA630; color:#fff; border:none; cursor:pointer; font-weight:500; }
+    .admin-table { width:100%; border-collapse:collapse; margin-top:12px; }
+    .admin-table th, .admin-table td { border:1px solid #eee; padding:8px 6px; text-align:center; }
+    .admin-table th { background:#fffbe9; color:#FFA630; }
+    .admin-table td button { margin:0 2px; padding:4px 10px; border-radius:4px; border:none; cursor:pointer; }
+    .btn-edit { background:#2ecc40; color:#fff; }
+    .btn-delete { background:#ff5252; color:#fff; }
+    @media (max-width:600px) { .admin-container { padding:12px 2vw; } .admin-title { font-size:1.3rem; } }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-title">Admin Stok Makanan</div>
+    <form class="admin-form" id="form-stok">
+      <input type="hidden" id="edit-index">
+      <input type="text" id="nama-makanan" placeholder="Nama Makanan" required>
+      <input type="number" id="harga-makanan" placeholder="Harga (Rp)" min="0" required>
+      <input type="number" id="stok-makanan" placeholder="Stok" min="0" required>
+      <select id="kategori-makanan" required>
+        <option value="">Pilih Kategori</option>
+        <option value="makanan">Makanan</option>
+        <option value="minuman">Minuman</option>
+        <option value="snack">Snack</option>
+      </select>
+      <button type="submit">Simpan</button>
+    </form>
+    <table class="admin-table" id="tabel-stok">
+      <thead>
+        <tr><th>Nama</th><th>Harga</th><th>Stok</th><th>Kategori</th><th>Aksi</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script src="admin.js"></script>
+</body>
+</html> 
