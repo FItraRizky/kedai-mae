@@ -296,9 +296,24 @@ document.addEventListener('DOMContentLoaded', function() {
   enableCateringParallax();
 });
 
+// Tambahkan inisialisasi Firebase di awal file
+const firebaseConfig = {
+  apiKey: "AIzaSyBCpivifQQX0KSlVX-nKKDqrLDQRpBcHfY",
+  authDomain: "kedai-mae.firebaseapp.com",
+  databaseURL: "https://kedai-mae-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "kedai-mae",
+  storageBucket: "kedai-mae.appspot.com",
+  messagingSenderId: "293737028509",
+  appId: "1:293737028509:web:bc7c55d5d62dce63496d74",
+  measurementId: "G-WQXWBEKCV7"
+};
+if (!window.firebase?.apps?.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
 // RENDER MENU MAKANAN DARI LOCALSTORAGE ADMIN
-function renderMenuKategori(kategoriId, kategoriNama) {
-  const data = JSON.parse(localStorage.getItem('stokMakanan') || '[]');
+function renderMenuKategori(kategoriId, kategoriNama, data) {
   const kategori = document.querySelector('.menu-category#' + kategoriId);
   if (!kategori) return;
   kategori.innerHTML = '';
@@ -327,29 +342,32 @@ function renderMenuKategori(kategoriId, kategoriNama) {
     btn.addEventListener('click', function() {
       const idx = parseInt(this.getAttribute('data-idx'));
       const kat = this.getAttribute('data-kat');
-      const stokData = JSON.parse(localStorage.getItem('stokMakanan') || '[]');
-      // Cari index asli di data stok berdasarkan kategori dan urutan
-      const filtered = stokData.filter(item => item.kategori === kat);
-      const item = filtered[idx];
-      const realIdx = stokData.findIndex(x => x.nama === item.nama && x.kategori === kat);
-      if (stokData[realIdx] && stokData[realIdx].stok > 0) {
-        stokData[realIdx].stok -= 1;
-        localStorage.setItem('stokMakanan', JSON.stringify(stokData));
-        renderAllMenu();
-      }
+      // Ambil data stok terbaru dari Firebase, bukan localStorage
+      db.ref('stokMakanan').once('value', function(snap) {
+        const stokData = snap.val() || [];
+        const filtered = stokData.filter(item => item.kategori === kat);
+        const item = filtered[idx];
+        const realIdx = stokData.findIndex(x => x.nama === item.nama && x.kategori === kat);
+        if (stokData[realIdx] && stokData[realIdx].stok > 0) {
+          stokData[realIdx].stok -= 1;
+          db.ref('stokMakanan').set(stokData).then(() => {
+            renderAllMenuFromFirebase();
+          });
+        }
+      });
     });
   });
 }
-function renderAllMenu() {
-  renderMenuKategori('makanan', 'makanan');
-  renderMenuKategori('minuman', 'minuman');
-  renderMenuKategori('snack', 'snack');
+function renderAllMenuFromFirebase() {
+  db.ref('stokMakanan').on('value', function(snap) {
+    const data = snap.val() || [];
+    renderMenuKategori('makanan', 'makanan', data);
+    renderMenuKategori('minuman', 'minuman', data);
+    renderMenuKategori('snack', 'snack', data);
+  });
 }
 document.addEventListener('DOMContentLoaded', function() {
-  renderAllMenu();
-});
-window.addEventListener('storage', function(e) {
-  if (e.key === 'stokMakanan') {
-    renderAllMenu();
-  }
+  enableMenuTabs();
+  enableMenuSearch();
+  renderAllMenuFromFirebase();
 }); 
