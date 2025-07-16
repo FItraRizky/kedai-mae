@@ -12,6 +12,34 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// Inisialisasi Firebase Auth (pakai config yang sama)
+const auth = firebase.auth();
+
+// Login
+document.getElementById('login-btn').onclick = function() {
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-password').value;
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(err => {
+      document.getElementById('login-error').textContent = err.message;
+    });
+};
+
+// Logout
+document.getElementById('logout-btn').onclick = function() {
+  auth.signOut();
+};
+
+// Tampilkan/hidden form sesuai status login
+auth.onAuthStateChanged(function(user) {
+  const isLoggedIn = !!user;
+  document.getElementById('login-section').style.display = isLoggedIn ? 'none' : '';
+  document.getElementById('logout-btn').style.display = isLoggedIn ? '' : 'none';
+  document.querySelector('.admin-form').style.display = isLoggedIn ? '' : 'none';
+  document.getElementById('tabel-stok').style.display = isLoggedIn ? '' : 'none';
+  document.getElementById('tabel-menu-preview').parentElement.style.display = isLoggedIn ? '' : 'none';
+});
+
 // CRUD dan realtime
 function getStok(callback) {
   db.ref('stokMakanan').once('value', snap => {
